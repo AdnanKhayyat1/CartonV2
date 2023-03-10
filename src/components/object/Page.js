@@ -4,7 +4,6 @@ import Editor from "./Editor";
 import { supabase } from "../../supabaseClient";
 import { useParams } from "react-router-dom";
 import Header from "./header/Header";
-import { FaChevronLeft } from "react-icons/fa";
 
 const Page = ({ passedID, setShowPage, useCase = "" }) => {
   const [blocks, setBlocks] = useState(null);

@@ -1,1 +1,2 @@
 control + alt + L = console.log whatever you're highlighting
+Git history command

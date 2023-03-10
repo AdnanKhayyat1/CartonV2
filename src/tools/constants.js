@@ -8,7 +8,6 @@ import SimpleImage from "@editorjs/simple-image";
 import Marker from "@editorjs/marker";
 import Tooltip from "editorjs-tooltip";
 import fieldInput from "./fieldInput";
-import editorjsColumns from "@calumk/editorjs-columns";
 
 export const BLOCK_TOOLS = {
   header: {
