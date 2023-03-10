@@ -1,0 +1,106 @@
+.sideBar-wrapper {
+  background-color: #f6f6f6;
+
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.07);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: stretch;
+
+  height: 100%;
+  width: 100%;
+
+  font-size: 1em;
+  transition: width 0.3s ease;
+
+
+
+}
+.sideBar-wrapper.active{
+    width: 15vw;
+    padding: 10px;
+}
+.sideBar-wrapper.exiting{
+    width: 0vw;
+}
+.sideBar-section {
+    justify-content: center;
+    width: 100%;
+}
+.side-profile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;  
+    gap: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.collapsed {
+    overflow: hidden;
+    margin: 0 auto;
+    height: auto;
+
+}
+.side-profile:hover{
+    background-color: rgb(0,0,0,0.15);
+}
+.side-profile h3 {
+    color: black;
+    font-family: 'Inter';
+    text-align: left;
+    font-weight: 400;
+    font-size: 18px;
+    width: 100%;
+
+}
+.sideBar-section h3 {
+    color: black;
+    font-family: 'Inter';
+    text-align: left;
+    font-weight: 400;
+    font-size: 18px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+.sideBar-item {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: left;
+    align-items: center;
+
+    color: #585858;
+    font-family: 'Inter';
+    font-size: 16px;
+    text-align: left;
+    font-weight: 600;
+    gap: 5px;
+    margin: 3px 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    cursor: pointer;
+
+    border-radius: 5px;
+
+}
+
+.sideBar-item:hover{
+    background-color: rgb(0,0,0,0.15);
+
+}
+.navbar__item{
+    padding: 5px 16px;
+
+}
+.sidebar-logo{
+    display: flex;
+    justify-content: center;
+    
+}
+

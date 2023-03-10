@@ -1,0 +1,79 @@
+.App {
+  text-align: center;
+  height: 100%;
+  width:100%;
+  box-sizing: border-box
+
+
+}
+.main-site{
+  display: flex;
+  min-height: 100%;
+  overflow: hidden;
+  flex-direction: row;
+
+
+}
+
+.content{
+  flex: 1;
+  transition: all 0.3s ease;
+  overflow-y: scroll;
+}
+html, body, #root, .App {
+  height: 100%;
+}
+body {
+  --custom-font-family: 'Inter', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  --custom-bg-color: #F6F6F6;
+  --custom-panel-color: #222;
+  --custom-box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.8);
+
+  --custom-color-brand: #24b47e;
+  --custom-color-secondary: #666;
+  --custom-border: 1px solid #333;
+  --custom-border-radius: 5px;
+  --custom-spacing: 5px;
+
+  padding: 0;
+  margin: 0;
+  font-family: var(--custom-font-family);
+  background-color: var(--custom-bg-color);
+
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
