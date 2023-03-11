@@ -9,6 +9,7 @@ import Home from "./Home";
 import Navbar from "./components/navbar/Navbar";
 import Sidebar from "./components/sidebar/Sidebar";
 import NewObject from "./components/NewObject/NewObject";
+import DashboardNew from "./components/NewObject/DashboardNew";
 function App() {
   const [showSideBar, setShowSideBar] = useState(true);
 
@@ -29,7 +30,7 @@ function App() {
             <Routes>
               <Route exact path="/" element={<Home />} />
               <Route exact path="/pages/:id" element={<Page />} />
-              <Route exact path="/newobject/" element={<NewObject/>}/>
+              <Route exact path="/newobject/" element={<DashboardNew/>}/>
             </Routes>
           </div>
         </div>

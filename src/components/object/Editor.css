@@ -1,16 +1,16 @@
 .editor-page {
-  background-color: white;
-  border-radius: 10px;
-  min-height: 50vh;
-  text-align: left;
-  width: 100%;
 
-  background-color: white;
-  margin: 10px;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  text-align: left;
+  flex: 9;
+  padding-bottom: 70px;
+
 
 }
-.editor-page:hover{
+.ce-toolbar {
+  background-color: white;
+}
+.codex-editor__redactor{
+  padding-bottom: 10px !important;
 }
 
 .ce-block:hover {

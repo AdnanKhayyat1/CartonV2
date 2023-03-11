@@ -1,11 +1,14 @@
 .object-app {
-  margin: 10px auto;
-  max-width: 80vw;
   background-color: white;
-  border-radius: 10px;
-  padding: 25px;
+  padding: 0px 25px 25px 25px;
+  margin-top: 0px;
   height: 100%;
-  
+}
+.navbar-icon {
+  border-radius: 50px;
+  color: grey;
+  padding: 1px;
+  float: left;
 }
 
 @keyframes fadeUp {
@@ -80,39 +83,48 @@
   width: 100%;
 }
 .grid-cell {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background-color: white;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+.grid-cell:hover {
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+}
+.grid-column {
   margin: 10px;
   flex: 1;
 }
 
 .grid-container-header {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
 }
 .grid-col-header {
-    margin-right: 10px;
-    flex: 1;
-    border-radius: 3px;
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
-    background-color: white;
-
+  margin-right: 10px;
+  flex: 1;
+  border-radius: 3px;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  background-color: white;
 }
-.header-last-btn{
-    height: 100%;
-    float: right;
-    background-color: white;
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 3px;
-   
+.header-last-btn {
+  height: 100%;
+  float: right;
+  background-color: white;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
 }
 
-.header-delete-btn{
-    height: 100%;
-    width: 10%;
-    float: right;
-    opacity: 0.5;
+.header-delete-btn {
+  height: 100%;
+  width: 10%;
+  float: right;
+  opacity: 0.5;
 }
-.header-delete-btn:hover{
-    opacity: 1;
+.header-delete-btn:hover {
+  opacity: 1;
 }
