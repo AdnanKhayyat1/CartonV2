@@ -42,7 +42,6 @@ const Editor = ({
         ejInstance.current = editor;
       },
       onChange: async (api, event) => {},
-      autofocus: true,
       tools: BLOCK_TOOLS,
     });
   };

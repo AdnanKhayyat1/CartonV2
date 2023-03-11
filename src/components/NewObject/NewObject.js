@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Divider, Button, Dropdown, Row } from "antd";
+import { Input, Divider, Button, Dropdown } from "antd";
 import {
   HighlightFilled,
   PlusCircleTwoTone,
@@ -14,6 +14,8 @@ import "./newObject.css";
 import { COVER_IMAGE_URLS } from "../../tools/constants";
 import Editor from "../object/Editor";
 import Property from "../../tools/Property";
+import ContentGridV2 from "./ContentGridV2";
+
 
 function NewObject() {
   const [pageTitle, setPageTitle] = useState("");
@@ -24,7 +26,6 @@ function NewObject() {
   const [bio, setBio] = useState("");
 
   const [properties, setProperties] = useState([]);
-  const [isDoubleCols, setIsDoubleCols] = useState(false);
 
   const addProperty = () => {
     setProperties([...properties, <Property data={{}} />]);
@@ -119,48 +120,8 @@ function NewObject() {
         </Button>
       </div>
       <Divider />
-      <div className="grid-container-header">
-        <div className="grid-col-header"></div>
-        {isDoubleCols ? (
-          <div className="grid-col-header">
-            <div className="header-delete-btn">
-              <Button
-                block
-                style={{ height: "100%" }}
-                icon={
-                  <DeleteOutlined style={{ fontSize: "12px", color: "gray" }} />
-                }
-                type="text"
-                onClick={() => setIsDoubleCols(false)}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="header-last-btn">
-            <Button
-              style={{ height: "100%", border: "none" }}
-              icon={<PlusCircleOutlined style={{ fontSize: "12px" }} />}
-              onClick={() => setIsDoubleCols(true)}
-            />
-          </div>
-        )}
-      </div>
-      <div className="grid-container">
-        <div className="grid-cell">
-          <Editor editorID="editorjs-two" />
-          <Button block style={{ marginTop: "10px" }}>
-            Add Row
-          </Button>
-        </div>
-        {isDoubleCols && (
-          <div className="grid-cell">
-            <Editor editorID="editorjs-one" />
-            <Button block style={{ marginTop: "10px" }}>                
-              Add Row
-            </Button>
-          </div>
-        )}
-      </div>
+      <ContentGridV2/>
+
     </div>
   );
 }
