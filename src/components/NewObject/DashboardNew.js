@@ -2,7 +2,8 @@ import React, { useState, createContext, useEffect } from "react";
 import NewObject from "./NewObject";
 import styled from "styled-components";
 import { Col, Row } from "antd";
-
+import { ObjectApi } from "../../api/objectApi";
+import { useQuery } from "react-query";
 export const StateContext = createContext();
 
 const Wrapper = styled.div`
@@ -13,13 +14,12 @@ const Wrapper = styled.div`
   padding: 25px;
   height: 100%;
 `;
-const Wrapper2 = styled.div`
-`;
+const Wrapper2 = styled.div``;
 function DashboardNew() {
   const [splitScreen, setSplitScreen] = useState(false);
 
   useEffect(() => {
-    window.scrollTo({top: 0, left: 0, behavior:'smooth'});
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, [splitScreen]);
 
   return (
@@ -30,9 +30,9 @@ function DashboardNew() {
             <NewObject />
           </Col>
           {splitScreen && (
-          <Col span={splitScreen ? 12 : 0}>
-            <NewObject useCase="side-page"/>
-          </Col>
+            <Col span={12}>
+              <NewObject />
+            </Col>
           )}
         </Row>
       </Wrapper2>

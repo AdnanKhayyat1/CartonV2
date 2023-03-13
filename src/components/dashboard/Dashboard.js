@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { supabase } from "../../supabaseClient";
-import { uid } from "../../utils/utils";
+import { supabase } from "../../api/supabaseClient";
+import { uid } from "../../tools/utils";
 import { COVER_IMAGE_URLS } from "../../tools/constants";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";

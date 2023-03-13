@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Editor.css";
 import Editor from "./Editor";
-import { supabase } from "../../supabaseClient";
+import { supabase } from "../../api/supabaseClient";
 import { useParams } from "react-router-dom";
 import Header from "./header/Header";
 

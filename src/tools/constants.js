@@ -7,7 +7,6 @@ import Code from "@editorjs/code";
 import SimpleImage from "@editorjs/simple-image";
 import Marker from "@editorjs/marker";
 import Tooltip from "editorjs-tooltip";
-import fieldInput from "./fieldInput";
 
 export const BLOCK_TOOLS = {
   header: {
@@ -27,7 +26,6 @@ export const BLOCK_TOOLS = {
     class: Marker,
     shortcut: "SHIFT+CMD+M",
   },
-  field: fieldInput,
   tooltip: {
     class: Tooltip,
     config: {

@@ -1,13 +1,11 @@
 import { default as React, useEffect, useRef, useState } from "react";
 
-import { supabase } from "../../supabaseClient";
+import { supabase } from "../../api/supabaseClient";
 import EditorJS from "@editorjs/editorjs";
 
 import "./Editor.css";
 import { useNavigate } from "react-router-dom";
 import { BLOCK_TOOLS } from "../../tools/constants";
-import Property from "../../tools/Property";
-import { Divider } from "antd";
 const EDITTOR_HOLDER_ID = "editorjs";
 
 const Editor = ({
@@ -16,6 +14,7 @@ const Editor = ({
   setSaveTrigger,
   id,
   editorID,
+  isDragging,
   useCase = "",
 }) => {
   const ejInstance = useRef(null);

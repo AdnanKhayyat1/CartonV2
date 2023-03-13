@@ -4,6 +4,8 @@ import { Button } from "antd";
 import { PlusCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./newObject.css";
 import GridColumn from "./GridColumn";
+import { shallow } from "zustand/shallow";
+import { useObjectStore } from "./NewObject";
 const initialCols = [
   {
     id: "column-1",
@@ -30,8 +32,17 @@ const initialCols = [
 ];
 
 function ContentGridV2() {
+  const [leftColumn, setLeftColumn] = useObjectStore(
+    (state) => [state.leftColumn, state.updateLeftColumn],
+    shallow
+  );
+  const [rightColumn, setRightColumn] = useObjectStore(
+    (state) => [state.rightColumn, state.updateRightColumn],
+    shallow
+  );
+
   const [isDoubleCols, setIsDoubleCols] = useState(false);
-  const [data, setData] = useState(initialCols);
+  const [data, setData] = useState([initialCols]);
   const [numCells, setNumCells] = useState(2);
 
   const showColumn = () => {
@@ -89,6 +100,7 @@ function ContentGridV2() {
 
   return (
     <>
+
       <div className="grid-container-header">
         {data.map(
           (column) =>

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { message, Upload } from "antd";
-import { getBase64 } from "../../utils/utils";
+import { getBase64 } from "../../tools/utils";
 
 const beforeUpload = (file) => {
   const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";

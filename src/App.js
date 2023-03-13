@@ -1,15 +1,16 @@
-import "./App.css";
-import { useState, useEffect } from "react";
-import { supabase } from "./supabaseClient";
-import Auth from "./components/auth";
+import "./styles/App.css";
+import { useState, } from "react";
+
+
 import Page from "./components/object/Page";
-import Dashboard from "./components/dashboard/Dashboard";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./Home";
+import Home from "./views/Home";
 import Navbar from "./components/navbar/Navbar";
 import Sidebar from "./components/sidebar/Sidebar";
-import NewObject from "./components/NewObject/NewObject";
 import DashboardNew from "./components/NewObject/DashboardNew";
+import { create } from 'zustand';
+
 function App() {
   const [showSideBar, setShowSideBar] = useState(true);
 
