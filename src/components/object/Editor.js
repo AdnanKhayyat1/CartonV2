@@ -6,6 +6,8 @@ import EditorJS from "@editorjs/editorjs";
 import "./Editor.css";
 import { useNavigate } from "react-router-dom";
 import { BLOCK_TOOLS } from "../../tools/constants";
+
+import { useCellStore } from "../NewObject/GridColumn"
 const EDITTOR_HOLDER_ID = "editorjs";
 
 const Editor = ({

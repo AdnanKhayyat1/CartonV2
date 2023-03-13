@@ -48,9 +48,9 @@ function GridRow({ id, cell }) {
         </Popover>
         <SideLine></SideLine>
       </CellTimeline>
-      {cell.type === "editor" ? (
-        <Editor editorID={`editorjs-${id}`} />
-      ) : cell.type === "image" ? (
+      {cell.mode === "editor" ? (
+        <Editor editorID={`editorjs-${cell._id}`} />
+      ) : cell.mode === "image" ? (
         <ImageBlock />
       ) : (
         <EmbeddedObject />

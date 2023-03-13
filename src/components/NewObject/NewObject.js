@@ -23,21 +23,44 @@ export const useObjectStore = create((set) => ({
   title: "",
   bio: "",
   properties: [],
-  leftColumn: {},
-  rightColumn: {},
+  leftColumn: {
+    showColumn: true,
+    cellIDs: [],
+  },
+  rightColumn: {
+    showColumn: false,
+    cellsIDs: [],
+  },
   updateTitle: (title) => set(() => ({ title: title })),
   updateBio: (bio) => set(() => ({ bio: bio })),
   updateProperties: (properties) => set(() => ({ properties: properties })),
   updateLeftColumn: (leftColumn) => set(() => ({ leftColumn: leftColumn })),
   updateRightColumn: (rightColumn) => set(() => ({ rightColumn: rightColumn })),
-}));
-const useCellStore = create((set) => ({
-  cells: [],
-  setCells: (cells) => set(() => ({ cells: cells })),
+  addCellToLeftColumn: (id) =>
+    set((state) => ({
+      leftColumn: {
+        ...state.leftColumn,
+        cellIDs: [...state.leftColumn.cellIDs, id],
+      },
+    })),
+  addCellToRightColumn: (id) =>
+    set((state) => ({
+      rightColumn: {
+        ...state.rightColumn,
+        cellIDs: [...state.rightColumn.cellIDs, id],
+      },
+    })),
 }));
 
-useObjectStore.subscribe((state) => console.log(state));
-useCellStore.subscribe((state) => console.log(state));
+useObjectStore.subscribe((state) => updateObjectInServer({
+  title: state.title,
+  bio: state.bio,
+  properties: state.properties,
+  leftCol: state.leftColumn,
+  rightCol: state.rightColumn,
+  _id: '640d58cd5f5d6476f60aaa76'
+
+}));
 const updateObjectInServer = (data) => {
   return ObjectApi.updateObject(data);
 };
@@ -87,8 +110,14 @@ function NewObject({}) {
     (state) => [state.properties, state.updateProperties],
     shallow
   );
-  const updateLeftColumn = useObjectStore((state) => state.updateLeftColumn, shallow);
-  const updateRightColumn = useObjectStore((state) => state.updateRightColumn, shallow);
+  const updateLeftColumn = useObjectStore(
+    (state) => state.updateLeftColumn,
+    shallow
+  );
+  const updateRightColumn = useObjectStore(
+    (state) => state.updateRightColumn,
+    shallow
+  );
   const [isTyping, setIsTyping] = useState(false);
   useEffect(() => {
     if (isSuccess) {
@@ -97,7 +126,6 @@ function NewObject({}) {
       setProperties(data.properties);
       updateLeftColumn(data.leftCol);
       updateRightColumn(data.rightCol);
-      
     }
   }, [isSuccess]);
   useEffect(() => {
@@ -251,7 +279,7 @@ function NewObject({}) {
           </Button>
         </div>
         <Divider />
-        <ContentGridV2  />
+        <ContentGridV2 />
       </div>
     </Wrapper>
   );

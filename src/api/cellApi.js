@@ -9,8 +9,17 @@ const createCell = (cell) => {
 };
 //Read ALL
 const getCellsByIds = async (cellIDs) => {
-  const { data:response } = await HttpClient.get(CELL_API, cellIDs);
-  return response.data;
+
+  if (cellIDs && cellIDs.length > 0) {
+    const queryIDS = cellIDs.join(",");
+
+    const { data: response } = await HttpClient.get(
+      `${CELL_API}/?ids=${queryIDS}`
+    );
+    return response;
+  }
+
+  return [];
 };
 //Read ONE
 const getCell = async (id) => {

@@ -34,36 +34,30 @@ const initialCols = [
 function ContentGridV2() {
   const [leftColumn, setLeftColumn] = useObjectStore(
     (state) => [state.leftColumn, state.updateLeftColumn],
-    shallow
+    
   );
   const [rightColumn, setRightColumn] = useObjectStore(
     (state) => [state.rightColumn, state.updateRightColumn],
-    shallow
+    
   );
-
-  const [isDoubleCols, setIsDoubleCols] = useState(false);
+  const updateLeftCells = useObjectStore((state) => state.addCellToLeftColumn)
+  const updateRightCells = useObjectStore((state) => state.addCellToRightColumn)
   const [data, setData] = useState([initialCols]);
   const [numCells, setNumCells] = useState(2);
-
-  const showColumn = () => {
-    setData(data.map((col) => ({ ...col, showCol: true })));
-    setIsDoubleCols(true);
+  const bothColsOpen = () => {
+    return leftColumn.showCol && rightColumn.showCol;
   };
 
-  const hideCol = (e) => {
-    const id = e.currentTarget.id;
-    const updatedColumns = data.map((col) => {
-      if (col.id === id) {
-        return {
-          ...col,
-          showCol: false,
-        };
-      }
-      return col;
-    });
-    setIsDoubleCols(false);
+  const showColumn = () => {
 
-    setData(updatedColumns);
+    setLeftColumn({ ...leftColumn, showColumn: true });
+    setRightColumn({ ...rightColumn, showColumn: true });
+  };
+  const hideLeftCol = () => {
+    setLeftColumn({ ...leftColumn, showColumn: false });
+  };
+  const hideRightCol = () => {
+    setRightColumn({ ...rightColumn, showColumn: false });
   };
 
   const getColumnById = (id) => {
@@ -100,30 +94,39 @@ function ContentGridV2() {
 
   return (
     <>
-
       <div className="grid-container-header">
-        {data.map(
-          (column) =>
-            column.showCol && (
-              <div className="grid-col-header">
-                <div className="header-delete-btn">
-                  <Button
-                    block
-                    style={{ height: "100%" }}
-                    id={column.id}
-                    icon={
-                      <DeleteOutlined
-                        style={{ fontSize: "12px", color: "gray" }}
-                      />
-                    }
-                    type="text"
-                    onClick={hideCol}
-                  />
-                </div>
-              </div>
-            )
+        {leftColumn.showColumn && (
+          <div className="grid-col-header">
+            <div className="header-delete-btn">
+              <Button
+                block
+                style={{ height: "100%" }}
+                icon={
+                  <DeleteOutlined style={{ fontSize: "12px", color: "gray" }} />
+                }
+                type="text"
+                onClick={hideLeftCol}
+              />
+            </div>
+          </div>
         )}
-        {!isDoubleCols && (
+        {rightColumn.showColumn && (
+          <div className="grid-col-header">
+            <div className="header-delete-btn">
+              <Button
+                block
+                style={{ height: "100%" }}
+                icon={
+                  <DeleteOutlined style={{ fontSize: "12px", color: "gray" }} />
+                }
+                type="text"
+                onClick={hideRightCol}
+              />
+            </div>
+          </div>
+        )}
+
+        {!bothColsOpen() && (
           <div className="header-last-btn">
             <Button
               style={{ height: "100%", border: "none" }}
@@ -134,18 +137,8 @@ function ContentGridV2() {
         )}
       </div>
       <div className="grid-container">
-        {data.map((column) => {
-          return (
-            column.showCol && (
-              <GridColumn
-                key={column.id}
-                id={column.id}
-                cells={column.cells}
-                addRow={addRow}
-              />
-            )
-          );
-        })}
+        {leftColumn.showColumn && <GridColumn cellIDs={leftColumn.cellIDs} addRow={updateLeftCells}/>}
+        {rightColumn.showColumn && <GridColumn cellIDs={rightColumn.cellIDs} addRow={updateRightCells}/>}
       </div>
     </>
   );
