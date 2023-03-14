@@ -18,8 +18,8 @@ import { ObjectApi } from "../../api/objectApi";
 
 import { create } from "zustand";
 import { shallow } from "zustand/shallow";
-
-export const useObjectStore = create((set) => ({
+import { devtools} from "zustand/middleware";
+export const useObjectStore = create(devtools((set) => ({
   title: "",
   bio: "",
   properties: [],
@@ -50,7 +50,7 @@ export const useObjectStore = create((set) => ({
         cellIDs: [...state.rightColumn.cellIDs, id],
       },
     })),
-}));
+})));
 
 useObjectStore.subscribe((state) => updateObjectInServer({
   title: state.title,

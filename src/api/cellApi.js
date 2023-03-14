@@ -9,10 +9,8 @@ const createCell = (cell) => {
 };
 //Read ALL
 const getCellsByIds = async (cellIDs) => {
-
-  if (cellIDs && cellIDs.length > 0) {
-    const queryIDS = cellIDs.join(",");
-
+  const queryIDS = cellIDs.join(",");
+  if (queryIDS !== "") {
     const { data: response } = await HttpClient.get(
       `${CELL_API}/?ids=${queryIDS}`
     );
@@ -30,7 +28,7 @@ const getCell = async (id) => {
 //Update
 const updateCell = (cell) => {
   const response = HttpClient.put(`${CELL_API}/${cell._id}`, cell);
-  return response.data;
+  return response;
 };
 //Delete
 const removeCell = (cell) => {

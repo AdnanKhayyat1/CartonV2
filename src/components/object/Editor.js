@@ -1,31 +1,31 @@
-import { default as React, useEffect, useRef, useState } from "react";
+import { default as React, useEffect, useRef, useState, useCallback } from "react";
 
-import { supabase } from "../../api/supabaseClient";
 import EditorJS from "@editorjs/editorjs";
 
 import "./Editor.css";
-import { useNavigate } from "react-router-dom";
-import { BLOCK_TOOLS } from "../../tools/constants";
+import { BLOCK_TOOLS, DEFAULT_INITIAL_DATA } from "../../tools/constants";
 
-import { useCellStore } from "../NewObject/GridColumn"
+import { useCellStore } from "../NewObject/ContentGridV2";
+import { CellApi } from "../../api/cellApi";
+import { useMutation } from "react-query";
 const EDITTOR_HOLDER_ID = "editorjs";
 
-const Editor = ({
-  data,
-  saveTrigger,
-  setSaveTrigger,
-  id,
-  editorID,
-  isDragging,
-  useCase = "",
-}) => {
+const Editor = ({cell}) => {
   const ejInstance = useRef(null);
-  const [editorData, setEditorData] = React.useState(data);
-  const navigate = useNavigate();
-  const [customID, setCustomID] = useState(() => {
-    return editorID ? editorID : EDITTOR_HOLDER_ID;
-  });
+  const customID = `${EDITTOR_HOLDER_ID}-${cell._id}`;
+  const updateEditorData = useCellStore((state) => state.updateCellById);
 
+  const mutation = useMutation({
+    mutationFn: CellApi.updateCell,
+    onSuccess: (data) => {
+      if (data.status === 200) {
+        updateEditorData(cell._id, data.data);
+      }
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
   useEffect(() => {
     return () => {
       if (!ejInstance.current) {
@@ -38,49 +38,29 @@ const Editor = ({
   const initEditor = () => {
     const editor = new EditorJS({
       holder: customID,
-      data: editorData,
+      data: cell.data,
       onReady: () => {
         ejInstance.current = editor;
       },
-      onChange: async (api, event) => {},
+      onChange: async () => {
+        
+        await ejInstance.current.save().then(
+           (outputData) => {
+       
+            
+            mutation.mutate({
+              _id: cell._id,
+              mode: cell.mode,
+              order: cell.order,
+              data: outputData,           
+            });
+            
+          }
+        );
+      },
       tools: BLOCK_TOOLS,
     });
   };
-  const goBackHome = () => {
-    navigate("/");
-  };
-
-  useEffect(() => {
-    if (saveTrigger) {
-      ejInstance.current
-        .save()
-        .then(async (outputData) => {
-          try {
-            const { error } = await supabase
-              .from("pages")
-              .update({ blocks: { data: outputData.blocks } })
-              .eq("id", id);
-
-            if (error) throw error;
-
-            const { error2 } = await supabase
-              .from("pages")
-              .update({ title: outputData.blocks[0].data.text })
-              .eq("id", id);
-
-            if (error2) throw error;
-          } catch (error) {
-            console.log(error);
-          }
-          setSaveTrigger(false);
-
-          goBackHome();
-        })
-        .catch((error) => {
-          console.log("Saving failed: ", error);
-        });
-    }
-  }, [saveTrigger]);
 
   return (
     <React.Fragment>

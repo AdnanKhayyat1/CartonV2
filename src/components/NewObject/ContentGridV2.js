@@ -1,55 +1,78 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "antd";
 
 import { PlusCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./newObject.css";
 import GridColumn from "./GridColumn";
+import { create } from "zustand";
 import { shallow } from "zustand/shallow";
 import { useObjectStore } from "./NewObject";
-const initialCols = [
-  {
-    id: "column-1",
-    cells: [
-      {
-        id: "cell-1",
-        type: "editor",
-        order: 1,
-      },
-    ],
-    showCol: true,
-  },
-  {
-    id: "column-2",
-    cells: [
-      {
-        id: "cell-2",
-        type: "editor",
-        order: 1,
-      },
-    ],
-    showCol: false,
-  },
-];
+import { devtools } from "zustand/middleware";
+import { useQuery } from "react-query";
+import { CellApi } from "../../api/cellApi";
+import { useMutation } from "react-query";
+
+export const useCellStore = create(
+  devtools((set) => ({
+    cells: [],
+    initCells: (cells) => set((state) => ({state, cells})),
+    updateCells: (newCells) =>
+      set((state) => ({ cells: [...state.cells, newCells] })),
+    updateCellById: (id, newCellData) => {
+      set((state) => ({
+        cells: state.cells.map((cell) =>
+          cell._id === id ? { ...cell, data: newCellData } : cell
+        ),
+      }));
+    },
+  }))
+);
+
+
 
 function ContentGridV2() {
-  const [leftColumn, setLeftColumn] = useObjectStore(
-    (state) => [state.leftColumn, state.updateLeftColumn],
-    
+  const [leftColumn, setLeftColumn] = useObjectStore((state) => [
+    state.leftColumn,
+    state.updateLeftColumn,
+  ]);
+  const [rightColumn, setRightColumn] = useObjectStore((state) => [
+    state.rightColumn,
+    state.updateRightColumn,
+  ]);
+  const [cells, setCells, initCells] = useCellStore((state) => [
+    state.cells,
+    state.updateCells,
+    state.initCells,
+  ]);
+
+  const updateLeftCells = useObjectStore((state) => state.addCellToLeftColumn);
+  const updateRightCells = useObjectStore(
+    (state) => state.addCellToRightColumn
   );
-  const [rightColumn, setRightColumn] = useObjectStore(
-    (state) => [state.rightColumn, state.updateRightColumn],
-    
+  const allCells = leftColumn.cellIDs.concat(rightColumn.cellIDs);
+
+  const { isLoading, isError, data, isSuccess } = useQuery(
+    ["cells", allCells],
+    () => CellApi.getCellsByIds(allCells), {
+      onSuccess: (data) => {
+        if(data) {
+          setCells(data);
+        }
+      }
+    }
+
   );
-  const updateLeftCells = useObjectStore((state) => state.addCellToLeftColumn)
-  const updateRightCells = useObjectStore((state) => state.addCellToRightColumn)
-  const [data, setData] = useState([initialCols]);
-  const [numCells, setNumCells] = useState(2);
+
+  useEffect(() => {
+    if (isSuccess) {
+      initCells(data);
+    }
+  }, [isSuccess]);
+
   const bothColsOpen = () => {
     return leftColumn.showCol && rightColumn.showCol;
   };
-
   const showColumn = () => {
-
     setLeftColumn({ ...leftColumn, showColumn: true });
     setRightColumn({ ...rightColumn, showColumn: true });
   };
@@ -60,37 +83,34 @@ function ContentGridV2() {
     setRightColumn({ ...rightColumn, showColumn: false });
   };
 
-  const getColumnById = (id) => {
-    return data.find((col) => col.id === id);
-  };
-  const getColumnIndexById = (id) => {
-    return data.findIndex((col) => col.id === id);
+  const createLeftCell =  useMutation({
+    mutationFn: CellApi.createCell,
+    onSuccess: (data) => {
+      const newCell = data.data;
+      setCells(newCell);
+      updateLeftCells(newCell._id);
+    },
+  });
+
+  const createRightCell = useMutation({
+    mutationFn: CellApi.createCell,
+    onSuccess: (data) => {
+      const newCell = data.data;
+      setCells(newCell);
+      updateRightCells(newCell._id);
+    },
+  });
+  const _filterCells = (cellIds) => {
+    return cells.filter((cell) => cellIds.includes(cell._id));
   };
 
-  const addRow = (id, type) => {
-    const currentColumn = getColumnById(id);
-    const newRow = {
-      id: `cell-${numCells + 1}`,
-      type: type || "editor",
-      order:
-        currentColumn.cells.length === 0
-          ? 0
-          : currentColumn.cells[currentColumn.cells.length - 1].order + 1,
-    };
-    setNumCells(numCells + 1);
-    const updatedCurrentColumn = {
-      ...currentColumn,
-      cells: [...currentColumn.cells, newRow],
-    };
-    const columnIndex = getColumnIndexById(id);
-    const updatedAllColumns = [
-      ...data.slice(0, columnIndex),
-      updatedCurrentColumn,
-      ...data.slice(columnIndex + 1),
-    ];
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-    setData(updatedAllColumns);
-  };
+  if (isError) {
+    return <div>Error: {isError.message}</div>;
+  }
 
   return (
     <>
@@ -137,8 +157,18 @@ function ContentGridV2() {
         )}
       </div>
       <div className="grid-container">
-        {leftColumn.showColumn && <GridColumn cellIDs={leftColumn.cellIDs} addRow={updateLeftCells}/>}
-        {rightColumn.showColumn && <GridColumn cellIDs={rightColumn.cellIDs} addRow={updateRightCells}/>}
+        {leftColumn.showColumn && (
+          <GridColumn
+            cells={_filterCells(leftColumn.cellIDs)}
+            addRow={() => createLeftCell.mutate()}
+          />
+        )}
+        {rightColumn.showColumn && (
+          <GridColumn
+            cells={_filterCells(rightColumn.cellIDs)}
+            addRow={() => createRightCell.mutate()}
+          />
+        )}
       </div>
     </>
   );
