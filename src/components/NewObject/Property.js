@@ -44,6 +44,9 @@ const DEFAULT_INITIAL_DATA = () => {
   };
 };
 let index = 0;
+let ICON_STYLE = {
+  color: 'gray',
+}
 function Property({ data, onDataChange }) {
   const [type, setType] = useState(data.type ? data.type : "text");
   const [key, setKey] = useState(data.key ? data.key : "");
@@ -60,12 +63,13 @@ function Property({ data, onDataChange }) {
   const typeSelector = (
     <Select
       defaultValue="text"
+      bordered={false}
       onChange={(t) => onTypeChange(t)}
       options={[
-        { value: "text", label: <FontSizeOutlined /> },
-        { value: "number", label: <NumberOutlined /> },
-        { value: "selector", label: <CheckCircleOutlined /> },
-        { value: "date", label: <CalendarOutlined /> },
+        { value: "text", label: <FontSizeOutlined style={ICON_STYLE}/> },
+        { value: "number", label: <NumberOutlined style={ICON_STYLE}/> },
+        { value: "selector", label: <CheckCircleOutlined style={ICON_STYLE}/> },
+        { value: "date", label: <CalendarOutlined style={ICON_STYLE}/> },
       ]}
     />
   );
@@ -124,6 +128,7 @@ function Property({ data, onDataChange }) {
         return (
           <Select
             style={{ width: "calc(50% - 200px)" }}
+            prefix-icon={<CalendarOutlined/>}
             placeholder="Select item"
             bordered={false}
             mode="multiple"

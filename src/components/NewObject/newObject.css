@@ -97,6 +97,10 @@
   margin: 10px;
   flex: 1;
 }
+.icon-set{
+  margin-top:10px;
+  padding-top: 3px;
+}
 
 .grid-container-header {
   display: flex;
@@ -127,4 +131,11 @@
 }
 .header-delete-btn:hover {
   opacity: 1;
+}
+
+.header-section{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+ 
 }

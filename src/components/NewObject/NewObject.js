@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Input, Divider, Button, Breadcrumb, Spin } from "antd";
+import { Input, Divider, Button, Breadcrumb, Spin, Modal, Drawer, Space } from "antd";
 import {
   PlusCircleOutlined,
   HighlightOutlined,
@@ -9,7 +9,6 @@ import {
 } from "@ant-design/icons";
 import "./newObject.css";
 import { COVER_IMAGE_URLS } from "../../tools/constants";
-import Property from "../../tools/Property";
 import ContentGridV2 from "./ContentGridV2";
 import styled from "styled-components";
 import { StateContext } from "./DashboardNew";
@@ -18,49 +17,55 @@ import { ObjectApi } from "../../api/objectApi";
 
 import { create } from "zustand";
 import { shallow } from "zustand/shallow";
-import { devtools} from "zustand/middleware";
-export const useObjectStore = create(devtools((set) => ({
-  title: "",
-  bio: "",
-  properties: [],
-  leftColumn: {
-    showColumn: true,
-    cellIDs: [],
-  },
-  rightColumn: {
-    showColumn: false,
-    cellsIDs: [],
-  },
-  updateTitle: (title) => set(() => ({ title: title })),
-  updateBio: (bio) => set(() => ({ bio: bio })),
-  updateProperties: (properties) => set(() => ({ properties: properties })),
-  updateLeftColumn: (leftColumn) => set(() => ({ leftColumn: leftColumn })),
-  updateRightColumn: (rightColumn) => set(() => ({ rightColumn: rightColumn })),
-  addCellToLeftColumn: (id) =>
-    set((state) => ({
-      leftColumn: {
-        ...state.leftColumn,
-        cellIDs: [...state.leftColumn.cellIDs, id],
-      },
-    })),
-  addCellToRightColumn: (id) =>
-    set((state) => ({
-      rightColumn: {
-        ...state.rightColumn,
-        cellIDs: [...state.rightColumn.cellIDs, id],
-      },
-    })),
-})));
+import { devtools } from "zustand/middleware";
+import Tags from './Tags'
+import Properties from './Properties'
+export const useObjectStore = create(
+  devtools((set) => ({
+    title: "",
+    bio: "",
+    properties: [],
+    leftColumn: {
+      showColumn: true,
+      cellIDs: [],
+    },
+    rightColumn: {
+      showColumn: false,
+      cellsIDs: [],
+    },
+    updateTitle: (title) => set(() => ({ title: title })),
+    updateBio: (bio) => set(() => ({ bio: bio })),
+    updateProperties: (properties) => set(() => ({ properties: properties })),
+    updateLeftColumn: (leftColumn) => set(() => ({ leftColumn: leftColumn })),
+    updateRightColumn: (rightColumn) =>
+      set(() => ({ rightColumn: rightColumn })),
+    addCellToLeftColumn: (id) =>
+      set((state) => ({
+        leftColumn: {
+          ...state.leftColumn,
+          cellIDs: [...state.leftColumn.cellIDs, id],
+        },
+      })),
+    addCellToRightColumn: (id) =>
+      set((state) => ({
+        rightColumn: {
+          ...state.rightColumn,
+          cellIDs: [...state.rightColumn.cellIDs, id],
+        },
+      })),
+  }))
+);
 
-useObjectStore.subscribe((state) => updateObjectInServer({
-  title: state.title,
-  bio: state.bio,
-  properties: state.properties,
-  leftCol: state.leftColumn,
-  rightCol: state.rightColumn,
-  _id: '640d58cd5f5d6476f60aaa76'
-
-}));
+useObjectStore.subscribe((state) =>
+  updateObjectInServer({
+    title: state.title,
+    bio: state.bio,
+    properties: state.properties,
+    leftCol: state.leftColumn,
+    rightCol: state.rightColumn,
+    _id: "640d58cd5f5d6476f60aaa76",
+  })
+);
 const updateObjectInServer = (data) => {
   return ObjectApi.updateObject(data);
 };
@@ -91,7 +96,6 @@ function NewObject({}) {
     ["object", "640d58cd5f5d6476f60aaa76"],
     () => ObjectApi.getObject(id)
   );
-  const [showIconSet, setShowIconSet] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [coverIndex, setCoverIndex] = useState(-1);
   const { splitScreen, setSplitScreen } = useContext(StateContext);
@@ -119,6 +123,17 @@ function NewObject({}) {
     shallow
   );
   const [isTyping, setIsTyping] = useState(false);
+  const [openStyle, setOpenStyle] = useState(false);
+
+  const showDrawer = () => {
+    setOpenStyle(true);
+  };
+
+  const onClose = () => {
+    setOpenStyle(false);
+  };
+
+
   useEffect(() => {
     if (isSuccess) {
       setTitle(data.title);
@@ -159,6 +174,16 @@ function NewObject({}) {
   }
   return (
     <Wrapper>
+      <Drawer
+        title="Basic Drawer"
+        placement="right"
+        onClose={onClose}
+        open={openStyle}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Drawer>
       {splitScreen && (
         <Nav>
           <ArrowLeftOutlined
@@ -193,52 +218,51 @@ function NewObject({}) {
             coverIndex >= 0 ? COVER_IMAGE_URLS[coverIndex] : "white",
         }}
       >
-        <div className="header-main" onMouseLeave={() => setShowIconSet(false)}>
-          {title !== "" && (showIconSet || showPicker) && (
-            <div className="icon-set">
-              {showPicker && (
-                <div className="color-picker-cover">
-                  {COVER_IMAGE_URLS.map((color, index) => {
-                    return (
-                      <div
-                        className="color-icon"
-                        style={{
-                          backgroundColor: color,
-                        }}
-                        value={index}
-                        key={index}
-                        onClick={() => {
-                          setCoverIndex(index);
-                          setShowPicker(!showPicker);
-                        }}
-                      ></div>
-                    );
-                  })}
-                </div>
-              )}
-              <Button
-                className="header-btn"
-                icon={<HighlightOutlined />}
-                onClick={() => {
-                  setShowPicker(!showPicker);
-                }}
-                type="text"
-              >
-                Theme
-              </Button>
-              <Button
-                className="header-btn"
-                icon={<ExperimentOutlined />}
-                onClick={() => {}}
-                type="text"
-              >
-                Logic
-              </Button>
-            </div>
-          )}
+        <div className="header-main">
+          <div className="icon-set">
+            {showPicker && (
+              <div className="color-picker-cover">
+                {COVER_IMAGE_URLS.map((color, index) => {
+                  return (
+                    <div
+                      className="color-icon"
+                      style={{
+                        backgroundColor: color,
+                      }}
+                      value={index}
+                      key={index}
+                      onClick={() => {
+                        setCoverIndex(index);
+                        setShowPicker(!showPicker);
+                      }}
+                    ></div>
+                  );
+                })}
+              </div>
+            )}
+            <Button
+              className="header-btn"
+              icon={<HighlightOutlined />}
+              onClick={() => {
+                setShowPicker(!showPicker);
+                showDrawer();
+              }}
+              type="text"
+            >
+              Theme
+            </Button>
+            <Button
+              className="header-btn"
+              icon={<ExperimentOutlined />}
+              onClick={() => {}}
+              type="text"
+            >
+              Logic
+            </Button>
+          </div>
+
           <Input
             placeholder="New Page Title"
-            onMouseEnter={() => setShowIconSet(true)}
             value={title}
             bordered={false}
             style={{ fontSize: 50, fontWeight: 600, maxWidth: "30vw" }}
@@ -264,19 +288,10 @@ function NewObject({}) {
           />
         </div>
         <div className="header-section">
-          <Divider orientation="left" orientationMargin="0">
-            Properties
-          </Divider>
-          {properties}
-          <Button
-            icon={<PlusCircleOutlined />}
-            type="dashed"
-            onClick={() => {
-              addProperty();
-            }}
-          >
-            Add property
-          </Button>
+          <Tags/>
+        </div>
+        <div className="header-section">
+          <Properties/>
         </div>
         <Divider />
         <ContentGridV2 />

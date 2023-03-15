@@ -54,4 +54,4 @@ function GridColumn({ cells, addRow }) {
   );
 }
 
-export default GridColumn;
+export default React.memo(GridColumn);

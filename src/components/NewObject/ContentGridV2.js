@@ -15,7 +15,7 @@ import { useMutation } from "react-query";
 export const useCellStore = create(
   devtools((set) => ({
     cells: [],
-    initCells: (cells) => set((state) => ({state, cells})),
+    initCells: (cells) => set((state) => ({ state, cells })),
     updateCells: (newCells) =>
       set((state) => ({ cells: [...state.cells, newCells] })),
     updateCellById: (id, newCellData) => {
@@ -28,8 +28,6 @@ export const useCellStore = create(
   }))
 );
 
-
-
 function ContentGridV2() {
   const [leftColumn, setLeftColumn] = useObjectStore((state) => [
     state.leftColumn,
@@ -39,11 +37,10 @@ function ContentGridV2() {
     state.rightColumn,
     state.updateRightColumn,
   ]);
-  const [cells, setCells, initCells] = useCellStore((state) => [
-    state.cells,
-    state.updateCells,
-    state.initCells,
-  ]);
+  const [cells, setCells, initCells] = useCellStore(
+    (state) => [state.cells, state.updateCells, state.initCells],
+    shallow
+  );
 
   const updateLeftCells = useObjectStore((state) => state.addCellToLeftColumn);
   const updateRightCells = useObjectStore(
@@ -53,14 +50,14 @@ function ContentGridV2() {
 
   const { isLoading, isError, data, isSuccess } = useQuery(
     ["cells", allCells],
-    () => CellApi.getCellsByIds(allCells), {
+    () => CellApi.getCellsByIds(allCells),
+    {
       onSuccess: (data) => {
-        if(data) {
+        if (data) {
           setCells(data);
         }
-      }
+      },
     }
-
   );
 
   useEffect(() => {
@@ -83,7 +80,7 @@ function ContentGridV2() {
     setRightColumn({ ...rightColumn, showColumn: false });
   };
 
-  const createLeftCell =  useMutation({
+  const createLeftCell = useMutation({
     mutationFn: CellApi.createCell,
     onSuccess: (data) => {
       const newCell = data.data;
