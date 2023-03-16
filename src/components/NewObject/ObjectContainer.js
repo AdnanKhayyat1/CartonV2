@@ -4,18 +4,13 @@ import styled from "styled-components";
 import { Col, Row } from "antd";
 import { ObjectApi } from "../../api/objectApi";
 import { useQuery } from "react-query";
+import { useParams } from "react-router-dom";
 export const StateContext = createContext();
 
-const Wrapper = styled.div`
-  margin: 10px auto;
-  width: 90%;
-  background-color: white;
-  border-radius: 10px;
-  padding: 25px;
-  height: 100%;
-`;
 const Wrapper2 = styled.div``;
-function DashboardNew() {
+function ObjectContainer() {
+  const {id} = useParams();
+  
   const [splitScreen, setSplitScreen] = useState(false);
 
   useEffect(() => {
@@ -27,7 +22,7 @@ function DashboardNew() {
       <Wrapper2>
         <Row>
           <Col span={splitScreen ? 12 : 24}>
-            <NewObject />
+            <NewObject id={id}/>
           </Col>
           {splitScreen && (
             <Col span={12}>
@@ -40,4 +35,4 @@ function DashboardNew() {
   );
 }
 
-export default DashboardNew;
+export default ObjectContainer;

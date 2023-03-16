@@ -1,8 +1,8 @@
 .search-container {
-  width: 400px;
+  width: 800px;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.02);
-  padding: 10px;
+  background-color: #E8EBF4;
+  padding: 6px;
   gap: 5px;
 
   display: flex;

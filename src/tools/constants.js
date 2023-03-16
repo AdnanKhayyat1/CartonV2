@@ -54,6 +54,7 @@ export const DEFAULT_INITIAL_DATA = () => {
 };
 
 export const COVER_IMAGE_URLS = [
+  "#FFFFFF",
   "#EAE4E9",
   "#FFF1E6",
   "#FDE2E4",

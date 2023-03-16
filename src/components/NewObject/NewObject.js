@@ -1,5 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Input, Divider, Button, Breadcrumb, Spin, Modal, Drawer, Space } from "antd";
+import {
+  Input,
+  Divider,
+  Button,
+  Breadcrumb,
+  Spin,
+  Drawer,
+} from "antd";
 import {
   PlusCircleOutlined,
   HighlightOutlined,
@@ -11,15 +18,16 @@ import "./newObject.css";
 import { COVER_IMAGE_URLS } from "../../tools/constants";
 import ContentGridV2 from "./ContentGridV2";
 import styled from "styled-components";
-import { StateContext } from "./DashboardNew";
+import { StateContext } from "./ObjectContainer";
 import { useQuery, useMutation } from "react-query";
 import { ObjectApi } from "../../api/objectApi";
 
 import { create } from "zustand";
 import { shallow } from "zustand/shallow";
 import { devtools } from "zustand/middleware";
-import Tags from './Tags'
-import Properties from './Properties'
+import Tags from "./Tags";
+import Properties from "./Properties";
+import Styler from './Styler';
 export const useObjectStore = create(
   devtools((set) => ({
     title: "",
@@ -90,10 +98,10 @@ const Wrapper = styled.div`
   margin: 10px;
 `;
 
-function NewObject({}) {
-  const id = "640d58cd5f5d6476f60aaa76";
+function NewObject({id}) {
+
   const { isLoading, isError, data, isSuccess } = useQuery(
-    ["object", "640d58cd5f5d6476f60aaa76"],
+    ["object", id],
     () => ObjectApi.getObject(id)
   );
   const [showPicker, setShowPicker] = useState(false);
@@ -124,6 +132,32 @@ function NewObject({}) {
   );
   const [isTyping, setIsTyping] = useState(false);
   const [openStyle, setOpenStyle] = useState(false);
+  const [objConfig, setObjConfig] = useState([
+    {
+      name: "color",
+      value: "#FFFFFF",
+    },
+    {
+      name: "font",
+      value: "",
+    },
+    {
+      name: "align",
+      value: "center",
+    },
+    {
+      name: "showTags",
+      value: true,
+    },
+    {
+      name: "showProps",
+      value: true,
+    },
+    {
+      name: "customCSS",
+      value: "",
+    },
+  ]);
 
   const showDrawer = () => {
     setOpenStyle(true);
@@ -132,7 +166,6 @@ function NewObject({}) {
   const onClose = () => {
     setOpenStyle(false);
   };
-
 
   useEffect(() => {
     if (isSuccess) {
@@ -175,14 +208,13 @@ function NewObject({}) {
   return (
     <Wrapper>
       <Drawer
-        title="Basic Drawer"
+        title="Style"
         placement="right"
         onClose={onClose}
         open={openStyle}
+        forceRender
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <Styler objConfig={objConfig} setObjConfig={setObjConfig}/>
       </Drawer>
       {splitScreen && (
         <Nav>
@@ -211,35 +243,13 @@ function NewObject({}) {
           />
         </Nav>
       )}
-      <div
-        className="object-app"
-        style={{
-          backgroundColor:
-            coverIndex >= 0 ? COVER_IMAGE_URLS[coverIndex] : "white",
-        }}
-      >
+      <div className="object-app" style={{
+        backgroundColor: objConfig[0].value,
+        fontFamily: objConfig[1].value,
+        textAlign: objConfig[2].value,
+      }}>
         <div className="header-main">
           <div className="icon-set">
-            {showPicker && (
-              <div className="color-picker-cover">
-                {COVER_IMAGE_URLS.map((color, index) => {
-                  return (
-                    <div
-                      className="color-icon"
-                      style={{
-                        backgroundColor: color,
-                      }}
-                      value={index}
-                      key={index}
-                      onClick={() => {
-                        setCoverIndex(index);
-                        setShowPicker(!showPicker);
-                      }}
-                    ></div>
-                  );
-                })}
-              </div>
-            )}
             <Button
               className="header-btn"
               icon={<HighlightOutlined />}
@@ -259,20 +269,29 @@ function NewObject({}) {
             >
               Logic
             </Button>
+            <Button
+              className="header-btn"
+              icon={<PlusCircleOutlined/>}
+              onClick={() => {}}
+              type="text"
+            >
+              Save as Type
+            </Button>
           </div>
-
-          <Input
-            placeholder="New Page Title"
-            value={title}
-            bordered={false}
-            style={{ fontSize: 50, fontWeight: 600, maxWidth: "30vw" }}
-            onBlur={() => setIsTyping(false)}
-            onFocus={() => setIsTyping(true)}
-            onChange={(e) => {
-              setTitle(e.target.value);
-            }}
-            onKeyDown={(e) => {}}
-          />
+          <div className="title-wrapper">
+            <Input
+              placeholder="New Page Title"
+              value={title}
+              bordered={false}
+              style={{ fontSize: 50, fontWeight: 600, maxWidth: "30vw" }}
+              onBlur={() => setIsTyping(false)}
+              onFocus={() => setIsTyping(true)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+              onKeyDown={(e) => {}}
+            />
+          </div>
         </div>
         <div className="header-section">
           <Input
@@ -288,10 +307,10 @@ function NewObject({}) {
           />
         </div>
         <div className="header-section">
-          <Tags/>
+          {objConfig[3].value && <Tags />}
         </div>
         <div className="header-section">
-          <Properties/>
+          {objConfig[4].value && <Properties/>}
         </div>
         <Divider />
         <ContentGridV2 />

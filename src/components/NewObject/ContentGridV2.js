@@ -67,7 +67,7 @@ function ContentGridV2() {
   }, [isSuccess]);
 
   const bothColsOpen = () => {
-    return leftColumn.showCol && rightColumn.showCol;
+    return leftColumn.showColumn && rightColumn.showColumn;
   };
   const showColumn = () => {
     setLeftColumn({ ...leftColumn, showColumn: true });
@@ -117,10 +117,10 @@ function ContentGridV2() {
             <div className="header-delete-btn">
               <Button
                 block
-                style={{ height: "100%" }}
                 icon={
-                  <DeleteOutlined style={{ fontSize: "12px", color: "gray" }} />
+                  <DeleteOutlined style={{ color: "gray" }} />
                 }
+                style={{ height: "100%", padding: "0px", margin: "0 auto"}}
                 type="text"
                 onClick={hideLeftCol}
               />
@@ -132,10 +132,10 @@ function ContentGridV2() {
             <div className="header-delete-btn">
               <Button
                 block
-                style={{ height: "100%" }}
                 icon={
-                  <DeleteOutlined style={{ fontSize: "12px", color: "gray" }} />
+                  <DeleteOutlined style={{ color: "gray" }} />
                 }
+                style={{ height: "100%", padding: "0px", margin: "0 auto"}}
                 type="text"
                 onClick={hideRightCol}
               />

@@ -1,7 +1,7 @@
 import React, {useContext} from "react";
 import styled from "styled-components";
 import { FileOutlined  } from "@ant-design/icons";
-import { StateContext } from "./DashboardNew";
+import { StateContext } from "./ObjectContainer";
 const Wrapper = styled.div`
   margin: 10px;
 

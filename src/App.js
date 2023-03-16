@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./views/Home";
 import Navbar from "./components/navbar/Navbar";
 import Sidebar from "./components/sidebar/Sidebar";
-import DashboardNew from "./components/NewObject/DashboardNew";
+import DashboardNew from "./components/NewObject/ObjectContainer";
 import { create } from "zustand";
 import Graph from "./components/Graph/Graph";
 
@@ -31,7 +31,7 @@ function App() {
             <Routes>
               <Route exact path="/" element={<Home />} />
               <Route exact path="/pages/:id" element={<Page />} />
-              <Route exact path="/newobject/" element={<DashboardNew />} />
+              <Route exact path="/newobject/:id" element={<DashboardNew />} />
               <Route exact path="/graph" element={<Graph />} />
             </Routes>
           </div>

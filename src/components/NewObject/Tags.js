@@ -19,6 +19,7 @@ const TAG_COLORS = [
 const TagWrapper = styled.div`
   text-align: left;
   min-width: 40vw;
+  margin-left: 10px;
 `;
 
 const tagRender = (props) => {
