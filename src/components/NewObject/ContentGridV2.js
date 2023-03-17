@@ -80,25 +80,23 @@ function ContentGridV2() {
     setRightColumn({ ...rightColumn, showColumn: false });
   };
 
-  const createLeftCell = useMutation({
-    mutationFn: CellApi.createCell,
-    onSuccess: (data) => {
-      const newCell = data.data;
-      setCells(newCell);
-      updateLeftCells(newCell._id);
-    },
-  });
+  const createCell = useMutation((type) => CellApi.createCell({ mode: type }));
 
-  const createRightCell = useMutation({
-    mutationFn: CellApi.createCell,
-    onSuccess: (data) => {
-      const newCell = data.data;
-      setCells(newCell);
-      updateRightCells(newCell._id);
-    },
-  });
   const _filterCells = (cellIds) => {
     return cells.filter((cell) => cellIds.includes(cell._id));
+  };
+  const addCell = async (key, column = "left") => {
+    const response = await createCell.mutateAsync(key);
+    if (response.data) {
+      const newCell = response.data;
+
+      setCells(newCell);
+      if (column === "left") {
+        updateLeftCells(newCell._id);
+      } else {
+        updateRightCells(newCell._id);
+      }
+    }
   };
 
   if (isLoading) {
@@ -117,10 +115,8 @@ function ContentGridV2() {
             <div className="header-delete-btn">
               <Button
                 block
-                icon={
-                  <DeleteOutlined style={{ color: "gray" }} />
-                }
-                style={{ height: "100%", padding: "0px", margin: "0 auto"}}
+                icon={<DeleteOutlined style={{ color: "gray" }} />}
+                style={{ height: "100%", padding: "0px", margin: "0 auto" }}
                 type="text"
                 onClick={hideLeftCol}
               />
@@ -132,10 +128,8 @@ function ContentGridV2() {
             <div className="header-delete-btn">
               <Button
                 block
-                icon={
-                  <DeleteOutlined style={{ color: "gray" }} />
-                }
-                style={{ height: "100%", padding: "0px", margin: "0 auto"}}
+                icon={<DeleteOutlined style={{ color: "gray" }} />}
+                style={{ height: "100%", padding: "0px", margin: "0 auto" }}
                 type="text"
                 onClick={hideRightCol}
               />
@@ -157,13 +151,13 @@ function ContentGridV2() {
         {leftColumn.showColumn && (
           <GridColumn
             cells={_filterCells(leftColumn.cellIDs)}
-            addRow={() => createLeftCell.mutate()}
+            addRow={(type) => addCell(type, "left")}
           />
         )}
         {rightColumn.showColumn && (
           <GridColumn
             cells={_filterCells(rightColumn.cellIDs)}
-            addRow={() => createRightCell.mutate()}
+            addRow={(type) => addCell(type, "right")}
           />
         )}
       </div>

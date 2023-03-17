@@ -36,25 +36,29 @@ function GridRow({ id, cell }) {
       <p>Content</p>
     </div>
   );
+  console.log(cell);
+  const renderCell = () => {
+    if (cell.mode === "editor") {
+      return <Editor id={cell._id} cell={cell} key={cell._id} />;
+    } else if (cell.mode === "image") {
+      return <ImageBlock id={cell._id} cell={cell} key={cell._id} />;
+    } else {
+      return <EmbeddedObject id={cell._id} cell={cell} key={cell._id} />;
+    }
+  }
   return (
     <div className="grid-cell">
       <CellTimeline>
         <Popover content={content} title="Title" trigger="click">
           <StartPin
             style={{
-              borderColor: cell.type === "editor" ? "cornflowerblue" : "green",
+              borderColor: cell.mode === "editor" ? "cornflowerblue" : "green",
             }}
           />
         </Popover>
         <SideLine></SideLine>
       </CellTimeline>
-      {cell.mode === "editor" ? (
-        <Editor editorID={`editorjs-${cell._id}`} />
-      ) : cell.mode === "image" ? (
-        <ImageBlock />
-      ) : (
-        <EmbeddedObject />
-      )}
+      {renderCell()}
     </div>
   );
 }
