@@ -10,13 +10,26 @@ const PropertyWrapper = styled.div`
   align-items: start;
   width: 100%;
 `;
-function Properties({ showProps = true }) {
-  const [properties, setProperties] = React.useState([]);
+function Properties({ properties, setProperties }) {
   const addProperty = () => {
     setProperties([
       ...properties,
-      <Property key={properties.length} data={{}} />,
+      {
+        key: "",
+        value: "",
+        type: "text",
+      },
     ]);
+  };
+  const updateProperty = (index, property) => {
+    const newProperties = [...properties];
+    newProperties[index] = property;
+    setProperties(newProperties);
+  };
+  const deleteProperty = (index) => {
+    const newProperties = [...properties];
+    newProperties.splice(index, 1);
+    setProperties(newProperties);
   };
   return (
     <PropertyWrapper>
@@ -27,7 +40,16 @@ function Properties({ showProps = true }) {
           orientationMargin="0"
         />
       )}
-      { properties}
+      {properties.map((property, index) => (
+        <Property
+          key={index}
+          propKey={property.key}
+          propValue={property.value}
+          propType={property.type}
+          onUpdate={(updatedProperty) => updateProperty(index, updatedProperty)}
+          onDelete={() => deleteProperty(index)}
+        />
+      ))}
 
       <Button
         type="text"

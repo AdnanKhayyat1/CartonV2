@@ -27,7 +27,9 @@ function MainDashboard() {
   const createNewObjectMutation = useMutation(ObjectApi.createObject, {
     onSuccess: (data) => {
       if (data) {
-        navigate(`/newobject/${data._id}`);
+        console.log(data)
+      
+        navigate(`/newobject/${data.data.data._id}`);
       }
     },
   });
@@ -47,6 +49,7 @@ function MainDashboard() {
   const createNewPage = () => {
     createNewObjectMutation.mutate();
     setCreateModalVisible(false);
+
   };
   const createNewCellFromTemplate = async (cellID) => {
     // here we do type checking

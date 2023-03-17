@@ -19,6 +19,7 @@ import {
   NumberOutlined,
   CalendarOutlined,
   CheckCircleOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 
 import "./property.css";
@@ -26,10 +27,6 @@ const TYPES = [
   {
     name: "Text",
     icon: IconText,
-  },
-  {
-    name: "Number",
-    icon: IconListNumbered,
   },
   {
     name: "Date",
@@ -45,51 +42,61 @@ const DEFAULT_INITIAL_DATA = () => {
 };
 let index = 0;
 let ICON_STYLE = {
-  color: 'gray',
-}
-function Property({ data, onDataChange }) {
-  const [type, setType] = useState(data.type ? data.type : "text");
-  const [key, setKey] = useState(data.key ? data.key : "");
-  const [value, setValue] = useState(data.value ? data.value : "");
-
+  color: "gray",
+};
+function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
   const [items, setItems] = useState(["Not Started", "In Progress", "Done"]);
   const [name, setName] = useState("");
   const inputRef = useRef(null);
 
   const onTypeChange = (t) => {
-    setValue("");
-    setType(t);
+    onUpdate({
+      key: propKey,
+      value: "",
+      type: t,
+    });
   };
+
+  const onKeyChange = (e) => {
+    onUpdate({
+      key: e.target.value,
+      value: propValue,
+      type: propType,
+    });
+  };
+
+  const onValueChange = (e) => {
+    console.log(e);
+    onUpdate({
+      key: propKey,
+      value: e.target.value,
+      type: propType,
+    });
+  };
+  const onSelectTypeChange = (item) => {
+    onUpdate({
+      key: propKey,
+      value: item,
+      type: propType,
+    });
+
+  }
   const typeSelector = (
     <Select
       defaultValue="text"
       bordered={false}
+      value={propType}
       onChange={(t) => onTypeChange(t)}
       options={[
-        { value: "text", label: <FontSizeOutlined style={ICON_STYLE}/> },
-        { value: "number", label: <NumberOutlined style={ICON_STYLE}/> },
-        { value: "selector", label: <CheckCircleOutlined style={ICON_STYLE}/> },
-        { value: "date", label: <CalendarOutlined style={ICON_STYLE}/> },
+        { value: "text", label: <FontSizeOutlined style={ICON_STYLE} /> },
+        {
+          value: "selector",
+          label: <CheckCircleOutlined style={ICON_STYLE} />,
+        },
+        { value: "date", label: <CalendarOutlined style={ICON_STYLE} /> },
       ]}
     />
   );
-  useEffect(() => {
-    if (onDataChange) {
-      onDataChange({
-        key: key,
-        value: value,
-        type: type,
-      });
-    }
-  }, [type, value, key]);
-
-  const onKeyChange = (e) => {
-    setKey(e.target.value);
-  };
-
-  const onValueChange = (event) => {
-    setValue(event.target.value);
-  };
 
   const addItem = (e) => {
     e.preventDefault();
@@ -101,26 +108,14 @@ function Property({ data, onDataChange }) {
   };
 
   const renderValueInput = () => {
-    switch (type) {
-      case "number":
-        return (
-          <InputNumber
-            style={{ width: "calc(50% - 200px)" }}
-            bordered={false}
-            onChange={(v) => {
-              onValueChange(v);
-            }}
-            placeholder="Enter number.."
-          />
-        );
+    switch (propType) {
       case "text":
         return (
           <Input
             style={{ width: "calc(50% - 200px)" }}
+            value={propValue}
             bordered={false}
-            onChange={(v) => {
-              onValueChange(v);
-            }}
+            onChange={onValueChange}
             placeholder="Enter value.."
           />
         );
@@ -128,10 +123,10 @@ function Property({ data, onDataChange }) {
         return (
           <Select
             style={{ width: "calc(50% - 200px)" }}
-            prefix-icon={<CalendarOutlined/>}
+            value={propValue}
+            prefix-icon={<CalendarOutlined />}
             placeholder="Select item"
             bordered={false}
-            mode="multiple"
             dropdownRender={(menu) => (
               <>
                 {menu}
@@ -141,7 +136,7 @@ function Property({ data, onDataChange }) {
                     placeholder="Please enter item"
                     ref={inputRef}
                     value={name}
-                    onChange={onValueChange}
+                    onChange={(e) => setName(e.target.value)}
                   />
                   <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
                     Add item
@@ -149,9 +144,7 @@ function Property({ data, onDataChange }) {
                 </Space>
               </>
             )}
-            onChange={(v) => {
-              onValueChange(v);
-            }}
+            onChange={onSelectTypeChange}
             options={items.map((item) => ({ label: item, value: item }))}
           />
         );
@@ -169,12 +162,24 @@ function Property({ data, onDataChange }) {
   return (
     <div className="prop-container">
       <Space.Compact direction="horizontal" block={true} align="center">
+        <Button
+          type="text"
+          icon={<DeleteOutlined />}
+          onClick={() => {
+            onDelete();
+          }}
+        />
         {typeSelector}
 
         <Input
           onChange={onKeyChange}
+          value={propKey}
           placeholder="Property name"
-          style={{ width: "calc(50% - 200px)", color:'rgb(0,0,0,0.5)', opacity:'100%' }}
+          style={{
+            width: "calc(50% - 200px)",
+            color: "rgb(0,0,0,0.5)",
+            opacity: "100%",
+          }}
           bordered={false}
         />
         {renderValueInput()}

@@ -6,7 +6,7 @@ import {
   ExperimentOutlined,
   ArrowLeftOutlined,
   HomeOutlined,
-  CloseCircleOutlined
+  CloseCircleOutlined,
 } from "@ant-design/icons";
 import "./newObject.css";
 import { COVER_IMAGE_URLS, DEFAULT_OBJECT_CONFIG } from "../../tools/constants";
@@ -25,6 +25,7 @@ import Styler from "./Styler";
 import CreateTemplateModal from "./CreateTemplateModal";
 export const useObjectStore = create(
   devtools((set) => ({
+    _id: "",
     title: "",
     bio: "",
     properties: [],
@@ -37,6 +38,7 @@ export const useObjectStore = create(
       showColumn: false,
       cellsIDs: [],
     },
+    updateId: (id) => set(() => ({ _id: id })),
     updateTitle: (title) => set(() => ({ title: title })),
     updateBio: (bio) => set(() => ({ bio: bio })),
     updateIsTemplate: (isTemplate) => set(() => ({ isTemplate: isTemplate })),
@@ -69,7 +71,7 @@ useObjectStore.subscribe((state) =>
     properties: state.properties,
     leftCol: state.leftColumn,
     rightCol: state.rightColumn,
-    _id: "640d58cd5f5d6476f60aaa76",
+    _id: state._id,
   })
 );
 const updateObjectInServer = (data) => {
@@ -105,6 +107,7 @@ function NewObject({ id }) {
     (state) => [state.title, state.updateTitle],
     shallow
   );
+  const setId = useObjectStore((state) => state.updateId, shallow);
   const mutation = useMutation((updatedObject) =>
     ObjectApi.updateObject(updatedObject)
   );
@@ -143,6 +146,7 @@ function NewObject({ id }) {
 
   useEffect(() => {
     if (isSuccess) {
+      setId(data._id);
       setTitle(data.title);
       setBio(data.bio);
       setIsTemplate(data.isTemplate);
@@ -157,7 +161,7 @@ function NewObject({ id }) {
         data.title !== title ||
         data.bio !== bio ||
         data.properties !== properties ||
-        data.isTemplate!== isTemplate 
+        data.isTemplate !== isTemplate
       ) {
         mutation.mutate({
           ...data,
@@ -171,11 +175,8 @@ function NewObject({ id }) {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [title, bio, properties]);
+  }, [title, bio, properties, isTemplate]);
 
-  const addProperty = () => {
-    // setProperties([...data.properties, <Property data={{}} />]);
-  };
   if (isLoading) {
     return <Spin />;
   }
@@ -280,7 +281,9 @@ function NewObject({ id }) {
         </div>
         <div className="header-section">{objConfig[3].value && <Tags />}</div>
         <div className="header-section">
-          {objConfig[4].value && <Properties />}
+          {objConfig[4].value && (
+            <Properties properties={properties} setProperties={setProperties} />
+          )}
         </div>
         <Divider />
         <ContentGridV2 />
