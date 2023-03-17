@@ -19,8 +19,8 @@ const getObject = async (id) => {
 };
 
 //Update
-const updateObject = (object) => {
-  const response = HttpClient.put(`${OBJECT_API}/${object._id}`, object);
+const updateObject = async (object) => {
+  const response = await HttpClient.put(`${OBJECT_API}/${object._id}`, object);
   return response.data;
 };
 //Delete

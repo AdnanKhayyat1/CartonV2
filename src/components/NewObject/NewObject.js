@@ -1,21 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
-import {
-  Input,
-  Divider,
-  Button,
-  Breadcrumb,
-  Spin,
-  Drawer,
-} from "antd";
+import { Input, Divider, Button, Breadcrumb, Spin, Drawer, Modal } from "antd";
 import {
   PlusCircleOutlined,
   HighlightOutlined,
   ExperimentOutlined,
   ArrowLeftOutlined,
   HomeOutlined,
+  CloseCircleOutlined
 } from "@ant-design/icons";
 import "./newObject.css";
-import { COVER_IMAGE_URLS } from "../../tools/constants";
+import { COVER_IMAGE_URLS, DEFAULT_OBJECT_CONFIG } from "../../tools/constants";
 import ContentGridV2 from "./ContentGridV2";
 import styled from "styled-components";
 import { StateContext } from "./ObjectContainer";
@@ -27,12 +21,14 @@ import { shallow } from "zustand/shallow";
 import { devtools } from "zustand/middleware";
 import Tags from "./Tags";
 import Properties from "./Properties";
-import Styler from './Styler';
+import Styler from "./Styler";
+import CreateTemplateModal from "./CreateTemplateModal";
 export const useObjectStore = create(
   devtools((set) => ({
     title: "",
     bio: "",
     properties: [],
+    isTemplate: false,
     leftColumn: {
       showColumn: true,
       cellIDs: [],
@@ -43,6 +39,7 @@ export const useObjectStore = create(
     },
     updateTitle: (title) => set(() => ({ title: title })),
     updateBio: (bio) => set(() => ({ bio: bio })),
+    updateIsTemplate: (isTemplate) => set(() => ({ isTemplate: isTemplate })),
     updateProperties: (properties) => set(() => ({ properties: properties })),
     updateLeftColumn: (leftColumn) => set(() => ({ leftColumn: leftColumn })),
     updateRightColumn: (rightColumn) =>
@@ -68,6 +65,7 @@ useObjectStore.subscribe((state) =>
   updateObjectInServer({
     title: state.title,
     bio: state.bio,
+    isTemplate: state.isTemplate,
     properties: state.properties,
     leftCol: state.leftColumn,
     rightCol: state.rightColumn,
@@ -98,15 +96,11 @@ const Wrapper = styled.div`
   margin: 10px;
 `;
 
-function NewObject({id}) {
-
-  const { isLoading, isError, data, isSuccess } = useQuery(
-    ["object", id],
-    () => ObjectApi.getObject(id)
+function NewObject({ id }) {
+  const { isLoading, isError, data, isSuccess } = useQuery(["object", id], () =>
+    ObjectApi.getObject(id)
   );
   const [showPicker, setShowPicker] = useState(false);
-  const [coverIndex, setCoverIndex] = useState(-1);
-  const { splitScreen, setSplitScreen } = useContext(StateContext);
   const [title, setTitle] = useObjectStore(
     (state) => [state.title, state.updateTitle],
     shallow
@@ -116,6 +110,10 @@ function NewObject({id}) {
   );
   const [bio, setBio] = useObjectStore(
     (state) => [state.bio, state.updateBio],
+    shallow
+  );
+  const [isTemplate, setIsTemplate] = useObjectStore(
+    (state) => [state.isTemplate, state.updateIsTemplate],
     shallow
   );
   const [properties, setProperties] = useObjectStore(
@@ -132,32 +130,8 @@ function NewObject({id}) {
   );
   const [isTyping, setIsTyping] = useState(false);
   const [openStyle, setOpenStyle] = useState(false);
-  const [objConfig, setObjConfig] = useState([
-    {
-      name: "color",
-      value: "#FFFFFF",
-    },
-    {
-      name: "font",
-      value: "",
-    },
-    {
-      name: "align",
-      value: "center",
-    },
-    {
-      name: "showTags",
-      value: true,
-    },
-    {
-      name: "showProps",
-      value: true,
-    },
-    {
-      name: "customCSS",
-      value: "",
-    },
-  ]);
+  const [objConfig, setObjConfig] = useState(DEFAULT_OBJECT_CONFIG);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
 
   const showDrawer = () => {
     setOpenStyle(true);
@@ -171,6 +145,7 @@ function NewObject({id}) {
     if (isSuccess) {
       setTitle(data.title);
       setBio(data.bio);
+      setIsTemplate(data.isTemplate);
       setProperties(data.properties);
       updateLeftColumn(data.leftCol);
       updateRightColumn(data.rightCol);
@@ -181,12 +156,14 @@ function NewObject({id}) {
       if (
         data.title !== title ||
         data.bio !== bio ||
-        data.properties !== properties
+        data.properties !== properties ||
+        data.isTemplate!== isTemplate 
       ) {
         mutation.mutate({
           ...data,
           title: title,
           bio: bio,
+          isTemplate: isTemplate,
           properties: properties,
         });
       }
@@ -214,40 +191,21 @@ function NewObject({id}) {
         open={openStyle}
         forceRender
       >
-        <Styler objConfig={objConfig} setObjConfig={setObjConfig}/>
+        <Styler objConfig={objConfig} setObjConfig={setObjConfig} />
       </Drawer>
-      {splitScreen && (
-        <Nav>
-          <ArrowLeftOutlined
-            className="navbar-icon"
-            onClick={() => setSplitScreen(false)}
-          />
-
-          <Breadcrumb
-            style={{
-              margin: "0 auto",
-            }}
-            items={[
-              {
-                href: "",
-                title: <HomeOutlined />,
-              },
-              {
-                href: "",
-                title: <span>{title ? title : "Parent"}</span>,
-              },
-              {
-                title: "New Object",
-              },
-            ]}
-          />
-        </Nav>
-      )}
-      <div className="object-app" style={{
-        backgroundColor: objConfig[0].value,
-        fontFamily: objConfig[1].value,
-        textAlign: objConfig[2].value,
-      }}>
+      <div
+        className="object-app"
+        style={{
+          backgroundColor: objConfig[0].value,
+          fontFamily: objConfig[1].value,
+          textAlign: objConfig[2].value,
+        }}
+      >
+        <CreateTemplateModal
+          show={showTemplateModal}
+          setShow={setShowTemplateModal}
+          setIsTemplate={setIsTemplate}
+        />
         <div className="header-main">
           <div className="icon-set">
             <Button
@@ -271,11 +229,25 @@ function NewObject({id}) {
             </Button>
             <Button
               className="header-btn"
-              icon={<PlusCircleOutlined/>}
-              onClick={() => {}}
+              icon={<PlusCircleOutlined />}
+              onClick={() => {
+                setShowTemplateModal(true);
+              }}
               type="text"
+              disabled={isTemplate}
             >
               Save as Type
+            </Button>
+            <Button
+              className="header-btn"
+              icon={<CloseCircleOutlined />}
+              onClick={() => {
+                setIsTemplate(false);
+              }}
+              type="text"
+              disabled={!isTemplate}
+            >
+              Remove Type
             </Button>
           </div>
           <div className="title-wrapper">
@@ -306,11 +278,9 @@ function NewObject({id}) {
             }}
           />
         </div>
+        <div className="header-section">{objConfig[3].value && <Tags />}</div>
         <div className="header-section">
-          {objConfig[3].value && <Tags />}
-        </div>
-        <div className="header-section">
-          {objConfig[4].value && <Properties/>}
+          {objConfig[4].value && <Properties />}
         </div>
         <Divider />
         <ContentGridV2 />

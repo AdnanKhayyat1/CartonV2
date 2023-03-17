@@ -65,3 +65,30 @@ export const COVER_IMAGE_URLS = [
   "#DFE7FD",
   "#CDDAFD",
 ];
+
+export const DEFAULT_OBJECT_CONFIG = [
+  {
+    name: "color",
+    value: "#FFFFFF",
+  },
+  {
+    name: "font",
+    value: "",
+  },
+  {
+    name: "align",
+    value: "center",
+  },
+  {
+    name: "showTags",
+    value: true,
+  },
+  {
+    name: "showProps",
+    value: true,
+  },
+  {
+    name: "customCSS",
+    value: "",
+  },
+];
