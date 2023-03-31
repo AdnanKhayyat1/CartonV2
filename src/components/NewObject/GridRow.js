@@ -36,7 +36,6 @@ function GridRow({ id, cell }) {
       <p>Content</p>
     </div>
   );
-  console.log(cell);
   const renderCell = () => {
     if (cell.mode === "editor") {
       return <Editor id={cell._id} cell={cell} key={cell._id} />;

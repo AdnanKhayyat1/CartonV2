@@ -11,14 +11,11 @@
   min-height: 100%;
   overflow: hidden;
   flex-direction: row;
-
-
 }
 
 .content{
   flex: 1;
   transition: all 0.3s ease;
-  overflow-y: auto;
 }
 html, body, #root, .App {
   height: 100%;

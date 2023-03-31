@@ -7,14 +7,14 @@ import { CellApi } from "../../api/cellApi";
 import { useNavigate } from "react-router-dom";
 import { Button, Modal, Space, Divider, List, Card, Meta } from "antd";
 import img from "./db-img.jpg";
-function MainDashboard() {
+function MainDashboard({userID}) {
   const [objects, setObjects] = useState([]);
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [templates, setTemplates] = useState([]);
 
   const { isLoading, isError, data, isSuccess } = useQuery(
     "objects",
-    () => ObjectApi.getObjects(),
+    () => ObjectApi.getObjects(userID),
     {
       onSuccess: (data) => {
         if (data) {
@@ -22,13 +22,13 @@ function MainDashboard() {
           setTemplates(data.filter((obj) => obj.isTemplate === true));
         }
       },
+      refetchOnMount: 'always',
+      
     }
   );
   const createNewObjectMutation = useMutation(ObjectApi.createObject, {
     onSuccess: (data) => {
-      if (data) {
-        console.log(data)
-      
+      if (data) {      
         navigate(`/newobject/${data.data.data._id}`);
       }
     },
@@ -54,7 +54,9 @@ function MainDashboard() {
   const createNewCellFromTemplate = async (cellID) => {
     // here we do type checking
     // get cell by id and check type
-    const cell = await CellApi.createCell();
+    const oldCell = await CellApi.getCell(cellID);
+    const templateMode = oldCell.mode;
+    const cell = await CellApi.createCell({mode: templateMode});
     return cell.data._id;
   };
   const createNewPageFromTemplate = async (e) => {

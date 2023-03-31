@@ -4,7 +4,7 @@
   background-color: white;
   padding: 0px 25px 25px 25px;
   margin-top: 0px;
-  height: 80vh;
+  min-height: 80vh;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
 
@@ -91,7 +91,7 @@
 .grid-container {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  justify-content: space-around;
   width: 100%;
 }
 .grid-cell {

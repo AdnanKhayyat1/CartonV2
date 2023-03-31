@@ -3,16 +3,11 @@ import {
   Select,
   Space,
   Input,
-  InputNumber,
   Divider,
   Button,
   DatePicker,
 } from "antd";
-import {
-  IconText,
-  IconListNumbered,
-  IconTableWithHeadings,
-} from "@codexteam/icons";
+
 import {
   PlusOutlined,
   FontSizeOutlined,
@@ -20,34 +15,39 @@ import {
   CalendarOutlined,
   CheckCircleOutlined,
   DeleteOutlined,
+  ApiOutlined
 } from "@ant-design/icons";
 
 import "./property.css";
-const TYPES = [
-  {
-    name: "Text",
-    icon: IconText,
-  },
-  {
-    name: "Date",
-    icon: IconTableWithHeadings,
-  },
-];
-const DEFAULT_INITIAL_DATA = () => {
-  return {
-    key: "",
-    value: "",
-    type: TYPES[0],
-  };
-};
+import { ObjectApi } from "../../api/objectApi";
 let index = 0;
 let ICON_STYLE = {
   color: "gray",
 };
 function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
-  const [items, setItems] = useState(["Not Started", "In Progress", "Done"]);
+
+  const [items, setItems] = useState([])
   const [name, setName] = useState("");
   const inputRef = useRef(null);
+  const [isSelectorLoading, setIsSelectorLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchAllObjects() {
+      try{
+        setIsSelectorLoading(true);
+        const response = await ObjectApi.getObjects();
+        setItems(response.map((object) => ({label: object.title, value: object._id})));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsSelectorLoading(false);
+      }
+    }
+
+    fetchAllObjects();
+
+    
+  }, []);
 
   const onTypeChange = (t) => {
     onUpdate({
@@ -89,11 +89,8 @@ function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
       onChange={(t) => onTypeChange(t)}
       options={[
         { value: "text", label: <FontSizeOutlined style={ICON_STYLE} /> },
-        {
-          value: "selector",
-          label: <CheckCircleOutlined style={ICON_STYLE} />,
-        },
         { value: "date", label: <CalendarOutlined style={ICON_STYLE} /> },
+        { value: "relation", label: <ApiOutlined style={ICON_STYLE} /> },
       ]}
     />
   );
@@ -119,7 +116,7 @@ function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
             placeholder="Enter value.."
           />
         );
-      case "selector":
+      case "relation":
         return (
           <Select
             style={{ width: "calc(50% - 200px)" }}
@@ -127,25 +124,9 @@ function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
             prefix-icon={<CalendarOutlined />}
             placeholder="Select item"
             bordered={false}
-            dropdownRender={(menu) => (
-              <>
-                {menu}
-                <Divider style={{ margin: "8px 0" }} />
-                <Space style={{ padding: "0 8px 4px" }}>
-                  <Input
-                    placeholder="Please enter item"
-                    ref={inputRef}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                  <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
-                    Add item
-                  </Button>
-                </Space>
-              </>
-            )}
+            disabled={isSelectorLoading}
             onChange={onSelectTypeChange}
-            options={items.map((item) => ({ label: item, value: item }))}
+            options={items.map((item) => ({ label: item.label, value: item.value }))}
           />
         );
       case "date":

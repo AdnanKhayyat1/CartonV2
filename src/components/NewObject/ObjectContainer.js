@@ -7,7 +7,7 @@ import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 export const StateContext = createContext();
 
-const Wrapper2 = styled.div``;
+
 function ObjectContainer() {
   const {id} = useParams();
   
@@ -19,10 +19,10 @@ function ObjectContainer() {
 
   return (
     <StateContext.Provider value={{ splitScreen, setSplitScreen }}>
-      <Wrapper2>
+
         <Row>
           <Col span={splitScreen ? 12 : 24}>
-            <NewObject id={id}/>
+            <NewObject id={id} key={id}/>
           </Col>
           {splitScreen && (
             <Col span={12}>
@@ -30,7 +30,7 @@ function ObjectContainer() {
             </Col>
           )}
         </Row>
-      </Wrapper2>
+ 
     </StateContext.Provider>
   );
 }

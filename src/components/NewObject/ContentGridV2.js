@@ -6,28 +6,13 @@ import "./newObject.css";
 import GridColumn from "./GridColumn";
 import { create } from "zustand";
 import { shallow } from "zustand/shallow";
-import { useObjectStore } from "./NewObject";
+import { useObjectStore } from "../stores/objectStore";
 import { devtools } from "zustand/middleware";
 import { useQuery } from "react-query";
 import { CellApi } from "../../api/cellApi";
 import { useMutation } from "react-query";
-
-export const useCellStore = create(
-  devtools((set) => ({
-    cells: [],
-    initCells: (cells) => set((state) => ({ state, cells })),
-    updateCells: (newCells) =>
-      set((state) => ({ cells: [...state.cells, newCells] })),
-    updateCellById: (id, newCellData) => {
-      set((state) => ({
-        cells: state.cells.map((cell) =>
-          cell._id === id ? { ...cell, data: newCellData } : cell
-        ),
-      }));
-    },
-  }))
-);
-
+import { ObjectApi } from "../../api/objectApi";
+import { useCellStore } from "../stores/cellStore";
 function ContentGridV2() {
   const [leftColumn, setLeftColumn] = useObjectStore((state) => [
     state.leftColumn,
@@ -51,13 +36,6 @@ function ContentGridV2() {
   const { isLoading, isError, data, isSuccess } = useQuery(
     ["cells", allCells],
     () => CellApi.getCellsByIds(allCells),
-    {
-      onSuccess: (data) => {
-        if (data) {
-          setCells(data);
-        }
-      },
-    }
   );
 
   useEffect(() => {

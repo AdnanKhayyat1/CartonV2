@@ -16,71 +16,15 @@ import { StateContext } from "./ObjectContainer";
 import { useQuery, useMutation } from "react-query";
 import { ObjectApi } from "../../api/objectApi";
 
-import { create } from "zustand";
 import { shallow } from "zustand/shallow";
-import { devtools } from "zustand/middleware";
+
 import Tags from "./Tags";
 import Properties from "./Properties";
 import Styler from "./Styler";
 import CreateTemplateModal from "./CreateTemplateModal";
-export const useObjectStore = create(
-  devtools((set) => ({
-    _id: "",
-    title: "",
-    bio: "",
-    properties: [],
-    isTemplate: false,
-    leftColumn: {
-      showColumn: true,
-      cellIDs: [],
-    },
-    rightColumn: {
-      showColumn: false,
-      cellsIDs: [],
-    },
-    updateId: (id) => set(() => ({ _id: id })),
-    updateTitle: (title) => set(() => ({ title: title })),
-    updateBio: (bio) => set(() => ({ bio: bio })),
-    updateIsTemplate: (isTemplate) => set(() => ({ isTemplate: isTemplate })),
-    updateProperties: (properties) => set(() => ({ properties: properties })),
-    updateLeftColumn: (leftColumn) => set(() => ({ leftColumn: leftColumn })),
-    updateRightColumn: (rightColumn) =>
-      set(() => ({ rightColumn: rightColumn })),
-    addCellToLeftColumn: (id) =>
-      set((state) => ({
-        leftColumn: {
-          ...state.leftColumn,
-          cellIDs: [...state.leftColumn.cellIDs, id],
-        },
-      })),
-    addCellToRightColumn: (id) =>
-      set((state) => ({
-        rightColumn: {
-          ...state.rightColumn,
-          cellIDs: [...state.rightColumn.cellIDs, id],
-        },
-      })),
-  }))
-);
+import useObjectStore from "../stores/objectStore";
+import { useAuthStore } from "../stores/authStore";
 
-useObjectStore.subscribe((state) =>
-  updateObjectInServer({
-    title: state.title,
-    bio: state.bio,
-    isTemplate: state.isTemplate,
-    properties: state.properties,
-    leftCol: state.leftColumn,
-    rightCol: state.rightColumn,
-    _id: state._id,
-  })
-);
-const updateObjectInServer = (data) => {
-  return ObjectApi.updateObject(data);
-};
-
-const updateCellInServer = (data) => {
-  return ObjectApi.updateCell(data);
-};
 const Nav = styled.div`
   height: 20px;
   padding-left: 0px;
@@ -113,6 +57,10 @@ function NewObject({ id }) {
   );
   const [bio, setBio] = useObjectStore(
     (state) => [state.bio, state.updateBio],
+    shallow
+  );
+  const [tags, setTags] = useObjectStore(
+    (state) => [state.tags, state.updateTags],
     shallow
   );
   const [isTemplate, setIsTemplate] = useObjectStore(
@@ -149,6 +97,7 @@ function NewObject({ id }) {
       setId(data._id);
       setTitle(data.title);
       setBio(data.bio);
+      setTags(data.tags);
       setIsTemplate(data.isTemplate);
       setProperties(data.properties);
       updateLeftColumn(data.leftCol);
@@ -161,12 +110,14 @@ function NewObject({ id }) {
         data.title !== title ||
         data.bio !== bio ||
         data.properties !== properties ||
-        data.isTemplate !== isTemplate
+        data.isTemplate !== isTemplate ||
+        data.tags !== tags
       ) {
         mutation.mutate({
           ...data,
           title: title,
           bio: bio,
+          tags: tags,
           isTemplate: isTemplate,
           properties: properties,
         });
@@ -213,7 +164,6 @@ function NewObject({ id }) {
               className="header-btn"
               icon={<HighlightOutlined />}
               onClick={() => {
-                setShowPicker(!showPicker);
                 showDrawer();
               }}
               type="text"
@@ -279,7 +229,9 @@ function NewObject({ id }) {
             }}
           />
         </div>
-        <div className="header-section">{objConfig[3].value && <Tags />}</div>
+        <div className="header-section">
+          <Tags />
+        </div>
         <div className="header-section">
           {objConfig[4].value && (
             <Properties properties={properties} setProperties={setProperties} />

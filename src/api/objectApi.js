@@ -8,8 +8,8 @@ const createObject = (object) => {
   return HttpClient.post(OBJECT_API, object);
 };
 //Read ALL
-const getObjects = async () => {
-  const { data:response } = await HttpClient.get(OBJECT_API);
+const getObjects = async (userID) => {
+  const { data:response } = await HttpClient.get(`${OBJECT_API}/?userID=${userID}`);
   return response.data;
 };
 //Read ONE

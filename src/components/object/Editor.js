@@ -5,7 +5,7 @@ import EditorJS from "@editorjs/editorjs";
 import "./Editor.css";
 import { BLOCK_TOOLS, DEFAULT_INITIAL_DATA } from "../../tools/constants";
 
-import { useCellStore } from "../NewObject/ContentGridV2";
+import { useCellStore } from "../stores/cellStore";
 import { CellApi } from "../../api/cellApi";
 import { useMutation } from "react-query";
 const EDITTOR_HOLDER_ID = "editorjs";
