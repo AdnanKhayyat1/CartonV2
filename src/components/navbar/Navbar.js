@@ -21,7 +21,7 @@ const Navbar = () => {
           return (
             <TooltipContent>
             <div style={{marginRight: '2px'}}>Show navigation menu</div>
-            <Keeb><UpOutlined /></Keeb>
+            <Keeb><UpOutlined  style={{strokeWidth: '10'}}/></Keeb>
             <Keeb>S</Keeb>
             </TooltipContent>
           )
@@ -53,6 +53,7 @@ const Keeb = styled.div`
   margin: 0px 4px;
   text-align: center;
   width: 22px;
+  font-weight: bold;
   box-shadow: inset 0px -3px 0px rgba(0, 0, 0, 0.25);
 
 

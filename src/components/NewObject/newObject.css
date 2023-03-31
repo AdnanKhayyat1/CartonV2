@@ -27,17 +27,17 @@
   }
 }
 .header-btn {
-  background-color: white;
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
   padding: 5px;
   border-radius: 10px;
-  color: rgb(0, 0, 0, 0.5);
+  color: rgb(0, 0, 0, .75);
+  padding-left: 8px;
+  padding-right: 8px;
 
   opacity: 0;
   transform: translateY(50%);
   animation: fadeUp 0.5s ease-out forwards;
-  margin-right: 5px;
   margin-bottom: 5px;
 }
 .btn-icon {
@@ -99,15 +99,16 @@
   flex-direction: row;
   align-items: stretch;
   background-color: white;
-  border-radius: 10px;
+  border-radius: 3px;
   margin-top: 10px;
 }
 .grid-cell:hover {
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
 }
 .grid-column {
-  margin: 10px;
+
   flex: 1;
+  width: 30vw;
 }
 .icon-set{
   margin-top:10px;
@@ -117,15 +118,15 @@
 .grid-container-header {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: center;
   width: 100%;
 }
 .grid-col-header {
   margin-right: 10px;
   flex: 1;
   border-radius: 10px;
-  background-color: #E8EBF4;
-  max-height: 20px;
+  background-color: rgb(232, 235, 244,0.5);
+  height: fit-content;
 
 
 }
@@ -138,12 +139,18 @@
 }
 
 .header-delete-btn {
-  height: 100%;
   width: 10%;
   float: right;
   opacity: 0.5;
 }
 .header-delete-btn:hover {
+  opacity: 1;
+}
+.add-button {
+  height: 100%;
+  opacity: 0.5;
+}
+.add-button:hover {
   opacity: 1;
 }
 

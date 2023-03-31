@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./views/Home";
 import Navbar from "./components/navbar/Navbar";
-import Sidebar from "./components/sidebar/Sidebar";
 import ObjectContainer from "./components/NewObject/ObjectContainer";
 import { supabase } from "./api/supabaseClient";
 
@@ -14,7 +13,6 @@ import SideBarV2 from "./components/sidebar/SideBarV2";
 
 function App() {
   const [session, setSession] = useState(null);
-  const [showSideBar, setShowSideBar] = useState(true);
   const [userID, setUserID] = useAuthStore((state) => [state.userID, state.updateUserID])
   
   useEffect(() => {

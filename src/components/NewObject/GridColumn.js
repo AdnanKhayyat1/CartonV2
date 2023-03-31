@@ -81,4 +81,6 @@ const StartPin = styled.div`
   cursor: pointer;
 `;
 
-export default React.memo(GridColumn);
+export default React.memo(GridColumn, (prevProps, nextProps) => {
+  return prevProps.cells === nextProps.cells;
+});

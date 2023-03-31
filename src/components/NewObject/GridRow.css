@@ -1,0 +1,16 @@
+.toggleTitle {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-left: 2px;
+    color: black;
+    transition: font-size 0.3s ease, font-weight 0.3s ease, color 0.3s ease;
+}
+.toggleTitle.active {
+    font-size: 1em;
+    font-weight: normal;
+    color: gray;
+
+}
+.toggleTitle.exiting {
+    font-size: 1.5em;
+}

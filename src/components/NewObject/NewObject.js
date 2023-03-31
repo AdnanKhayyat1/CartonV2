@@ -24,22 +24,13 @@ import Styler from "./Styler";
 import CreateTemplateModal from "./CreateTemplateModal";
 import useObjectStore from "../stores/objectStore";
 import { useAuthStore } from "../stores/authStore";
+import ObjectSidebar from "./ObjectSidebar";
 
-const Nav = styled.div`
-  height: 20px;
-  padding-left: 0px;
-  border-radius: 10px 10px 0px 0px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
 
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 5px 10px;
-  align-items: center;
-`;
 const Wrapper = styled.div`
   border-radius: 10px;
-  margin: 10px;
+  max-width: fit-content;
+  margin: 10px auto;
 `;
 
 function NewObject({ id }) {
@@ -136,6 +127,7 @@ function NewObject({ id }) {
   }
   return (
     <Wrapper>
+      <ObjectSidebar/>
       <Drawer
         title="Style"
         placement="right"
@@ -159,48 +151,7 @@ function NewObject({ id }) {
           setIsTemplate={setIsTemplate}
         />
         <div className="header-main">
-          <div className="icon-set">
-            <Button
-              className="header-btn"
-              icon={<HighlightOutlined />}
-              onClick={() => {
-                showDrawer();
-              }}
-              type="text"
-            >
-              Theme
-            </Button>
-            <Button
-              className="header-btn"
-              icon={<ExperimentOutlined />}
-              onClick={() => {}}
-              type="text"
-            >
-              Logic
-            </Button>
-            <Button
-              className="header-btn"
-              icon={<PlusCircleOutlined />}
-              onClick={() => {
-                setShowTemplateModal(true);
-              }}
-              type="text"
-              disabled={isTemplate}
-            >
-              Save as Type
-            </Button>
-            <Button
-              className="header-btn"
-              icon={<CloseCircleOutlined />}
-              onClick={() => {
-                setIsTemplate(false);
-              }}
-              type="text"
-              disabled={!isTemplate}
-            >
-              Remove Type
-            </Button>
-          </div>
+          
           <div className="title-wrapper">
             <Input
               placeholder="New Page Title"
@@ -216,6 +167,9 @@ function NewObject({ id }) {
             />
           </div>
         </div>
+        <div className="header-section" style={{ marginLeft: "5px" }}>
+          <Tags />
+        </div>
         <div className="header-section">
           <Input
             placeholder="Add bio"
@@ -229,9 +183,7 @@ function NewObject({ id }) {
             }}
           />
         </div>
-        <div className="header-section">
-          <Tags />
-        </div>
+
         <div className="header-section">
           {objConfig[4].value && (
             <Properties properties={properties} setProperties={setProperties} />

@@ -67,16 +67,17 @@ export const COVER_IMAGE_URLS = [
 ];
 
 export const TAG_COLORS = [
-  "#FFFFFF",
-  "#EAE4E9",
-  "#FFF1E6",
-  "#FDE2E4",
-  "#FAD2E1",
-  "#E2ECE9",
-  "#BEE1E6",
-  "#F0EFEB",
-  "#DFE7FD",
-  "#CDDAFD",
+  "magenta",
+  "red",
+  "volcano",
+  "orange",
+  "gold",
+  "lime",
+  "green",
+  "cyan",
+  "blue",
+  "geekblue",
+  "purple",
 ];
 
 export const DEFAULT_OBJECT_CONFIG = [

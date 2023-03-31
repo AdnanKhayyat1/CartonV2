@@ -35,7 +35,7 @@ function ContentGridV2() {
 
   const { isLoading, isError, data, isSuccess } = useQuery(
     ["cells", allCells],
-    () => CellApi.getCellsByIds(allCells),
+    () => CellApi.getCellsByIds(allCells)
   );
 
   useEffect(() => {
@@ -91,11 +91,12 @@ function ContentGridV2() {
         {leftColumn.showColumn && (
           <div className="grid-col-header">
             <div className="header-delete-btn">
-              <Button
-                block
-                icon={<DeleteOutlined style={{ color: "gray" }} />}
-                style={{ height: "100%", padding: "0px", margin: "0 auto" }}
-                type="text"
+              <DeleteOutlined
+                style={{
+                  color: "gray",
+                  padding: "0px",
+                  margin: "0 auto",
+                }}
                 onClick={hideLeftCol}
               />
             </div>
@@ -104,11 +105,12 @@ function ContentGridV2() {
         {rightColumn.showColumn && (
           <div className="grid-col-header">
             <div className="header-delete-btn">
-              <Button
-                block
-                icon={<DeleteOutlined style={{ color: "gray" }} />}
-                style={{ height: "100%", padding: "0px", margin: "0 auto" }}
-                type="text"
+              <DeleteOutlined
+                style={{
+                  color: "gray",
+                  padding: "0px",
+                  margin: "0 auto",
+                }}
                 onClick={hideRightCol}
               />
             </div>
@@ -116,13 +118,10 @@ function ContentGridV2() {
         )}
 
         {!bothColsOpen() && (
-          <div className="header-last-btn">
-            <Button
-              style={{ height: "100%", border: "none" }}
-              icon={<PlusCircleOutlined style={{ fontSize: "12px" }} />}
-              onClick={showColumn}
-            />
-          </div>
+          <PlusCircleOutlined
+            className="add-button"
+            onClick={showColumn}
+          />
         )}
       </div>
       <div className="grid-container">
