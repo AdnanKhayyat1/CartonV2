@@ -49,6 +49,7 @@ export const useObjectStore = create(
         false,
         "addCellToRightColumn"
       ),
+      
   }))
 );
 

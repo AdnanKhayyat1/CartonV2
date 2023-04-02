@@ -1,0 +1,10 @@
+.expanded-sidebar{
+    transition: flex 0.3s ease;
+}
+.active-side-bar {
+    flex: 9;
+}
+.hidden-side-bar {
+    flex: 0;
+
+}

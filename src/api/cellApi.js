@@ -34,6 +34,12 @@ const updateCell = (cell) => {
 const removeCell = (cell) => {
   return HttpClient.delete(`${API}${cell._id}`);
 };
+// delete tag from all cells
+const deleteTagFromCells = async (tagID) => {
+  const response = HttpClient.put(`${CELL_API}/tag/${tagID}`);
+  return response;
+
+}
 //Encapsulating in a JSON cell
-const CellApi = { createCell, getCellsByIds, getCell, updateCell, removeCell };
+const CellApi = { createCell, getCellsByIds, getCell, updateCell, removeCell, deleteTagFromCells};
 export { CellApi };

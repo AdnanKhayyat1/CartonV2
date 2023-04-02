@@ -42,7 +42,7 @@ function GridRow({ id, cell }) {
   const [currentCell, setCurrentCell] = useState(null);
   const [pinColor, setPinColor] = useState("cornflowerblue");
   const [isCollapsible, setIsCollapsible] = useState(false);
-  const [openToggle, setOpenToggle] = useState(false);
+  const [openToggle, setOpenToggle] = useState(true);
   const [openPopover, setOpenPopover] = useState(false);
   useEffect(() => {
     setCurrentCell(renderCell());

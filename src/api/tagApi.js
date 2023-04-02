@@ -16,5 +16,9 @@ const getTagById = async (id) => {
   const data = await HttpClient.get(`${TAG_API}/${id}`);
   return data;
 };
-const TagApi = { createTag, getTags, getTagById };
+const deleteTagById = async (id) => {
+  const data = await HttpClient.delete(`${TAG_API}/${id}`);
+  return data;
+}
+const TagApi = { createTag, getTags, getTagById, deleteTagById };
 export { TagApi };

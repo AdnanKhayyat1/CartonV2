@@ -6,12 +6,16 @@ import { useTagStore } from "../stores/tagStore";
 import { useAuthStore } from "../stores/authStore";
 import { TagApi } from "../../api/tagApi";
 import styled from "styled-components";
-import { LinkOutlined, DownOutlined } from "@ant-design/icons";
+import { LinkOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { TAG_COLORS } from "../../tools/constants";
-import { Button, Tag } from "antd";
+import { Button, Select, Tag, Spin } from "antd";
+import { useCellStore } from '../stores/cellStore';
+import { ObjectApi } from '../../api/objectApi';
+import { CellApi } from '../../api/cellApi';
 
 function Tags() {
   const userID = useAuthStore((state) => state.userID);
+  const [isLoading_ , setIsLoading] = useState(false);
 
   const [tags, updateTags] = useTagStore(
     (state) => [state.tags, state.updateTags],
@@ -71,6 +75,42 @@ function Tags() {
     newTagIDs.splice(index, 1);
     updateObjectTagsIDs(newTagIDs);
   };
+  const deleteTagsFromCellStore = useCellStore(
+    (state) => state.deleteTagFromAllCells,
+    shallow
+  );
+  const deleteTagEverywhere = async (tagID) => {
+    try {
+      setIsLoading(true);
+      // delete tag from all cells (FE)
+      deleteTagsFromCellStore(tagID);
+      // push changes to backend (BE)
+      const resCells = await CellApi.deleteTagFromCells(tagID);
+      if (!resCells.data) throw new Error("Cell POST call failed");
+      // delete tag from current page (FE)
+      if (objectTagIDs.includes(tagID)) {
+        const updatedObjectTags = objectTags.filter((tag) => {
+          return tag != tagID;
+        });
+        updateObjectTagsIDs(updatedObjectTags);
+      }
+      // delete tag from all pages (BE)
+      const resObjects = await ObjectApi.removeTagFromObjects(tagID);
+      if (resObjects.status !== 200) throw new Error("Object POST call failed");
+
+      // delete tag (FE, BE)
+      const resTags = await TagApi.deleteTagById(tagID);
+      if (resTags.status !== 200) throw new Error("Tag DELETE call failed");
+      var updatedTags = tags.filter((tag) => {
+        return tag._id != tagID;
+      });
+      updateTags(updatedTags);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -81,67 +121,78 @@ function Tags() {
 
   return (
     <Wrapper>
-      <CollapsedView style={{
-          backgroundColor: `${isDropDownOpen ? 'rgb(0, 0, 0,0.02)' : 'transparent'}`
-        }}>
-        <SelectedTags>
-          {tags
-            .filter((tag) => objectTagIDs.includes(tag._id))
-            .map((tag, index) => {
-              return (
-                <Tag
-                  key={index}
-                  id={tag._id}
-                  color={tag.color}
-                  onClick={() => {
-                    deselectTagHandler(index);
-                  }}
-                >
-                  {tag.name}
-                </Tag>
-              );
-            })}
-        </SelectedTags>
-        <Button
-          icon={<LinkOutlined style={{ color: "gray" }} />}
-          onClick={() => setIsDropDownOpen(!isDropDownOpen)}
-          type="text"
-          style={{
-            marginLeft: '5px',
-            padding: '4px 8px'
-          }}
-        >
-        Add tag
-        </Button>
-        
-      </CollapsedView>
-      {isDropDownOpen && (
-        <DropdownTags>
-          <DropdownPrompt>
-            Select a tag or create one
-          </DropdownPrompt>
+      {isLoading_ ? (
+        <Spin />
+      ) : (
+        <>
+          <CollapsedView
+            style={{
+              backgroundColor: `${
+                isDropDownOpen ? "rgb(0, 0, 0,0.02)" : "transparent"
+              }`,
+            }}
+          >
+            <SelectedTags>
+              {tags
+                .filter((tag) => objectTagIDs.includes(tag._id))
+                .map((tag, index) => {
+                  return (
+                    <Tag
+                      key={index}
+                      id={tag._id}
+                      color={tag.color}
+                      onClick={() => {
+                        deselectTagHandler(index);
+                      }}
+                    >
+                      {tag.name}
+                    </Tag>
+                  );
+                })}
+            </SelectedTags>
+            <Button
+              icon={<LinkOutlined style={{ color: "gray" }} />}
+              onClick={() => setIsDropDownOpen(!isDropDownOpen)}
+              type="text"
+              style={{
+                padding: "4px 8px",
+              }}
+            >
+              Add tag
+            </Button>
+          </CollapsedView>
+          {isDropDownOpen && (
+            <DropdownTags>
+              <DropdownPrompt>Select a tag or create one</DropdownPrompt>
 
-          <TagOptions>
-            {tags.map((tag, index) => {
-              return (
-                <Tag
-                  color={tag.color}
-                  key={index}
-                  id={tag._id}
-                  onClick={tagOptionClickHandler}
-                >
-                  {tag.name}
-                </Tag>
-              );
-            })}
-          </TagOptions>
-          <CreateTag
-            placeholder="New tag name"
-            value={newTagName}
-            onKeyDown={_handleKeyDown}
-            onChange={_onTagInputChange}
-          ></CreateTag>
-        </DropdownTags>
+              <TagOptions>
+                {tags.map((tag, index) => {
+                  return (
+                    <TagOption>
+                      <Tag
+                        color={tag.color}
+                        key={index}
+                        id={tag._id}
+                        onClick={tagOptionClickHandler}
+                      >
+                        {tag.name}
+                      </Tag>
+                      <CloseCircleOutlined
+                        onClick={() => deleteTagEverywhere(tag._id)}
+                      />
+                    </TagOption>
+                  );
+                })}
+              </TagOptions>
+              <CreateTag
+                placeholder="New tag name"
+                value={newTagName}
+                onKeyDown={_handleKeyDown}
+                onChange={_onTagInputChange}
+              ></CreateTag>
+            </DropdownTags>
+          )}
+        </>
       )}
     </Wrapper>
   );
@@ -149,8 +200,7 @@ function Tags() {
 const DropdownPrompt = styled.div`
   margin-top: 5px;
   margin-bottom: 5px;
-
-`
+`;
 const CollapsedView = styled.div`
   display: flex;
   width: 100%;
@@ -172,11 +222,10 @@ const TagOptions = styled.div`
   align-items: flex-start;
   overflow-x: hidden;
   gap: 5px;
-
 `;
 const DropdownTags = styled.div`
   position: absolute;
-  right: 0;
+  left: 0;
   top: 100%;
   background-color: white;
   box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
@@ -190,9 +239,16 @@ const DropdownTags = styled.div`
 
   display: flex;
   flex-direction: column;
+  min-width: 300px;
   width: calc(100% - 20px);
 
   overflow-y: auto;
+`;
+const TagOption = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 `;
 const CreateTag = styled.input`
   width: 95%;

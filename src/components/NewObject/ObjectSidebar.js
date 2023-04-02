@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Button, Tooltip } from "antd";
 import {
@@ -10,145 +10,137 @@ import {
   UpOutlined,
   MacCommandOutlined,
 } from "@ant-design/icons";
-function ObjectSidebar({
-  setIsTemplate,
-  isTemplate,
-  setShowTemplateModal,
-  showTemplateModal,
-}) {
+import Styler from "./Styler";
+import "./ObjectSidebar.css";
+import LayoutManager from "./LayoutManager";
+function ObjectSidebar({ setIsTemplate, isTemplate, triggerNotification }) {
+  const [selectedOption, setSelectedOption] = useState("");
   const showDrawer = () => {};
 
+  const renderExpandedSidebar = () => {
+    if (selectedOption === "STYLE") {
+      return <Styler />;
+    } else if (selectedOption === "LAYOUT") {
+      return <LayoutManager />;
+    } else {
+      return;
+    }
+  };
+  const templateHandler = () => {
+    setSelectedOption("");
+    if (isTemplate) {
+      setIsTemplate(false);
+      triggerNotification("info");
+    } else if (!isTemplate) {
+      setIsTemplate(true);
+      triggerNotification("success");
+    }
+  };
+
   return (
-    <SideBarWrapper>
-      <Tooltip
-        title={() => {
-          return (
-            <TooltipContent>
-              <div style={{ marginRight: "2px", whiteSpace: "nowrap" }}>
-                Edit appearance
-              </div>
-              <Keeb>
-                <MacCommandOutlined />
-              </Keeb>
-              <Keeb>S</Keeb>
-            </TooltipContent>
-          );
-        }}
-        placement="right"
-      >
-        <Button
-          className="header-btn"
-          icon={<HighlightOutlined />}
-          onClick={() => {
-            showDrawer();
+    <SidebarWrapper>
+      <CollapsedSidebar>
+        <Tooltip
+          title={() => {
+            return (
+              <TooltipContent>
+                <div style={{ marginRight: "2px", whiteSpace: "nowrap" }}>
+                  Edit appearance
+                </div>
+                <Keeb>
+                  <MacCommandOutlined />
+                </Keeb>
+                <Keeb>S</Keeb>
+              </TooltipContent>
+            );
           }}
-          block
-          type="text"
-        />
-      </Tooltip>
-
-      <Tooltip
-        title={() => {
-          return (
-            <TooltipContent>
-              <div style={{ marginRight: "2px", whiteSpace: "nowrap" }}>
-                Add integrations
-              </div>
-              <Keeb>
-                <UpOutlined style={{ strokeWidth: "10" }} />{" "}
-              </Keeb>
-              <Keeb>S</Keeb>
-            </TooltipContent>
-          );
-        }}
-        placement="right"
-      >
-        <Button
-          className="header-btn"
-          icon={<ExperimentOutlined />}
-          onClick={() => {}}
-          block
-          type="text"
-        />
-      </Tooltip>
-
-      <Tooltip
-        title={() => {
-          return (
-            <TooltipContent>
-              <div style={{ marginRight: "2px", whiteSpace: "nowrap" }}>
-                Save as template
-              </div>
-              <Keeb>
-                <UpOutlined style={{ strokeWidth: "10" }} />{" "}
-              </Keeb>
-              <Keeb>S</Keeb>
-            </TooltipContent>
-          );
-        }}
-        placement="right"
-      >
-        {true ? (
+          placement="left"
+        >
           <Button
             className="header-btn"
-            icon={<PlusCircleOutlined />}
+            icon={<HighlightOutlined />}
             onClick={() => {
-              setShowTemplateModal(true);
+              if (selectedOption === "STYLE") {
+                setSelectedOption("");
+              } else {
+                setSelectedOption("STYLE");
+              }
             }}
             block
             type="text"
-            disabled={isTemplate}
           />
-        ) : (
+        </Tooltip>
+
+        <Tooltip
+          title={() => {
+            return (
+              <TooltipContent>
+                <div style={{ marginRight: "2px", whiteSpace: "nowrap" }}>
+                  {!isTemplate ? "Save as template" : "Delete template"}
+                </div>
+              </TooltipContent>
+            );
+          }}
+          placement="left"
+        >
           <Button
             className="header-btn"
-            icon={<CloseCircleOutlined />}
-            onClick={() => {
-              setIsTemplate(false);
-            }}
+            icon={isTemplate ? <CloseCircleOutlined /> : <PlusCircleOutlined />}
+            onClick={templateHandler}
             block
             type="text"
-            disabled={!isTemplate}
           />
-        )}
-      </Tooltip>
-      <Tooltip
-        title={() => {
-          return (
-            <TooltipContent>
-              <div style={{ marginRight: "2px", whiteSpace: "nowrap" }}>
-                Configure layout
-              </div>
-              <Keeb>
-                <UpOutlined style={{ strokeWidth: "10" }} />{" "}
-              </Keeb>
-              <Keeb>S</Keeb>
-            </TooltipContent>
-          );
-        }}
-        placement="right"
+        </Tooltip>
+        <Tooltip
+          title={() => {
+            return (
+              <TooltipContent>
+                <div style={{ marginRight: "2px", whiteSpace: "nowrap" }}>
+                  Configure layout
+                </div>
+              </TooltipContent>
+            );
+          }}
+          placement="left"
+        >
+          <Button
+            className="header-btn"
+            icon={<LayoutOutlined />}
+            onClick={() => {
+              if (selectedOption === "LAYOUT") {
+                setSelectedOption("");
+              } else {
+                setSelectedOption("LAYOUT");
+              }
+            }}
+            type="text"
+            block
+          />
+        </Tooltip>
+      </CollapsedSidebar>
+      <div
+        className={`expanded-sidebar ${
+          !!selectedOption ? "active-side-bar" : "hidden-side-bar"
+        }`}
       >
-
-      <Button
-        className="header-btn"
-        icon={<LayoutOutlined />}
-        onClick={() => {}}
-        type="text"
-        block
-      />
-      </Tooltip>
-    </SideBarWrapper>
+        {renderExpandedSidebar()}
+      </div>
+    </SidebarWrapper>
   );
 }
-const SideBarWrapper = styled.div`
+const SidebarWrapper = styled.div`
   position: absolute;
   min-height: 100vh;
   max-width: fit-content;
   top: 0;
   right: 0;
   display: flex;
+`;
+const CollapsedSidebar = styled.div`
+  display: flex;
   width: fit-content;
   flex-direction: column;
+  background-color: white;
 
   padding-top: 100px;
 
@@ -156,6 +148,9 @@ const SideBarWrapper = styled.div`
   border-width: 0px 0px 1px 1px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 0.07);
+  padding-left: 10px;
+  padding-right: 10px;
+  flex: 1;
 `;
 
 const TooltipContent = styled.div`

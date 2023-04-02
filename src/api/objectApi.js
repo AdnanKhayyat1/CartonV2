@@ -9,7 +9,9 @@ const createObject = (object) => {
 };
 //Read ALL
 const getObjects = async (userID) => {
-  const { data:response } = await HttpClient.get(`${OBJECT_API}/?userID=${userID}`);
+  const { data: response } = await HttpClient.get(
+    `${OBJECT_API}/?userID=${userID}`
+  );
   return response.data;
 };
 //Read ONE
@@ -27,6 +29,18 @@ const updateObject = async (object) => {
 const removeObject = (object) => {
   return HttpClient.delete(`${API}${object._id}`);
 };
+// Remove tag from all objects
+const removeTagFromObjects = async (tagID) => {
+  const response = await HttpClient.put(`${API}/tag/${tagID}`);
+  return response;
+};
 //Encapsulating in a JSON object
-const ObjectApi = { createObject, getObjects, getObject, updateObject, removeObject };
+const ObjectApi = {
+  createObject,
+  getObjects,
+  getObject,
+  updateObject,
+  removeObject,
+  removeTagFromObjects,
+};
 export { ObjectApi };

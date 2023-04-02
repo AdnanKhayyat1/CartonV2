@@ -49,9 +49,7 @@ const Editor = ({cell}) => {
        
             
             mutation.mutate({
-              _id: cell._id,
-              mode: cell.mode,
-              order: cell.order,
+              ...cell,
               data: outputData,           
             });
             

@@ -25,6 +25,7 @@ import CreateTemplateModal from "./CreateTemplateModal";
 import useObjectStore from "../stores/objectStore";
 import { useAuthStore } from "../stores/authStore";
 import ObjectSidebar from "./ObjectSidebar";
+import { notification } from 'antd'
 
 
 const Wrapper = styled.div`
@@ -75,12 +76,31 @@ function NewObject({ id }) {
   const [objConfig, setObjConfig] = useState(DEFAULT_OBJECT_CONFIG);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
 
+  const [api, contextHolder] = notification.useNotification();
+
   const showDrawer = () => {
     setOpenStyle(true);
   };
 
   const onClose = () => {
     setOpenStyle(false);
+  };
+
+  const openNotificationWithIcon = (type) => {
+    if(type === 'success') {
+      api['success']({
+        message: 'Succesfully saved as template',
+        description:
+          'You can now create new pages like this one. Templates preserve layout, tags, style, and property keys.',
+      });
+    } else if(type==='info' ) {
+      api['info']({
+        message: 'Template deleted',
+        description:
+          'Your page is no longer a template.',
+      });
+    }
+
   };
 
   useEffect(() => {
@@ -127,7 +147,8 @@ function NewObject({ id }) {
   }
   return (
     <Wrapper>
-      <ObjectSidebar/>
+      {contextHolder}
+      <ObjectSidebar setIsTemplate={setIsTemplate} triggerNotification={openNotificationWithIcon} isTemplate={isTemplate}/>
       <Drawer
         title="Style"
         placement="right"
@@ -135,7 +156,7 @@ function NewObject({ id }) {
         open={openStyle}
         forceRender
       >
-        <Styler objConfig={objConfig} setObjConfig={setObjConfig} />
+        
       </Drawer>
       <div
         className="object-app"
@@ -145,11 +166,6 @@ function NewObject({ id }) {
           textAlign: objConfig[2].value,
         }}
       >
-        <CreateTemplateModal
-          show={showTemplateModal}
-          setShow={setShowTemplateModal}
-          setIsTemplate={setIsTemplate}
-        />
         <div className="header-main">
           
           <div className="title-wrapper">
@@ -167,7 +183,7 @@ function NewObject({ id }) {
             />
           </div>
         </div>
-        <div className="header-section" style={{ marginLeft: "5px" }}>
+        <div className="header-section">
           <Tags />
         </div>
         <div className="header-section">
