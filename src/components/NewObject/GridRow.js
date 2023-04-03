@@ -13,6 +13,7 @@ import {
 import { useEffect } from "react";
 import BlockSettings from "./BlockSettings";
 import "./GridRow.css";
+import { useCellStore } from "../stores/cellStore";
 
 const CellTimeline = styled.div`
   flex: 0.5;
@@ -38,9 +39,8 @@ const StartPin = styled.div`
   cursor: pointer;
 `;
 
-function GridRow({ id, cell }) {
+function GridRow({ id, cell, editorReadOnly = false }) {
   const [currentCell, setCurrentCell] = useState(null);
-  const [pinColor, setPinColor] = useState("cornflowerblue");
   const [isCollapsible, setIsCollapsible] = useState(false);
   const [openToggle, setOpenToggle] = useState(true);
   const [openPopover, setOpenPopover] = useState(false);
@@ -49,7 +49,14 @@ function GridRow({ id, cell }) {
   }, []);
   const renderCell = () => {
     if (cell.mode === "editor") {
-      return <Editor id={cell._id} cell={cell} key={cell._id} />;
+      return (
+        <Editor
+          id={cell._id}
+          cell={cell}
+          key={cell._id}
+          isReadOnly={editorReadOnly}
+        />
+      );
     } else if (cell.mode === "image") {
       return <ImageBlock id={cell._id} cell={cell} key={cell._id} />;
     } else {
@@ -73,7 +80,6 @@ function GridRow({ id, cell }) {
           content={
             <BlockSettings
               cell={cell}
-              setPinColor={setPinColor}
               collapsibleHandler={collapsibleHandler}
               isCollapsible={isCollapsible}
               closePopover={closePopover}
@@ -105,7 +111,7 @@ function GridRow({ id, cell }) {
         >
           <StartPin
             style={{
-              borderColor: cell.mode === "editor" ? pinColor : "green",
+              borderColor: cell.mode === "editor" ? cell.color : "green",
             }}
           />
         </Popover>
@@ -120,7 +126,7 @@ function GridRow({ id, cell }) {
             {openToggle ? <CaretDownOutlined /> : <CaretRightOutlined />}
           </div>
           <div className={`toggleTitle ${openToggle ? "active" : "exiting"}`}>
-            Block title
+            {!!cell.title ? cell.title : "Untitled Block"}
           </div>
         </ToggleHeader>
         {openToggle && currentCell}

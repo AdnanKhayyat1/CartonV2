@@ -9,25 +9,86 @@ import {
 import BlockTags from "./BlockTags";
 import styled from "styled-components";
 import { COVER_IMAGE_URLS } from "../../tools/constants";
-function BlockSettings({
-  cell,
-  setPinColor,
-  collapsibleHandler,
-  isCollapsible,
-}) {
+import { useCellStore } from "../stores/cellStore";
+import { useObjectStore } from "../stores/objectStore";
+import { CellApi } from "../../api/cellApi";
+import { shallow } from "zustand/shallow";
+function BlockSettings({ cell, collapsibleHandler, isCollapsible }) {
   const [blockTitle, setBlockTitle] = useState("");
+  const updateEntireCellById = useCellStore(
+    (state) => state.updateEntireCellById
+  );
 
-  const blockDeleteHandler = () => {};
+  const [cells, updateCells] = useCellStore(
+    (state) => [state.cells, state.updateCells],
+    shallow
+  );
+  const [leftColumn, updateLeftColumn, rightColumn, updateRightColumn] =
+    useObjectStore(
+      (state) => [
+        state.leftColumn,
+        state.updateLeftColumn,
+        state.rightColumn,
+        state.updateRightColumn,
+      ],
+      shallow
+    );
+  const changeColorHandler = async (value) => {
+    updateEntireCellById(cell._id, {...cell, color: value});
+    const res = await CellApi.updateCell({...cell, color: value});
+  }
+  const blockDeleteHandler = async () => {
+    try {
+      if (leftColumn.cellIDs.includes(cell._id)) {
+        const updatedLeftCells = leftColumn.cellIDs.filter(
+          (c) => c !== cell._id
+        );
+        console.log(updatedLeftCells);
+        updateLeftColumn({
+          ...leftColumn,
+          cellIDs: updatedLeftCells,
+        });
+      }
+      if (rightColumn.cellIDs.includes(cell._id)) {
+        const updatedRightCells = rightColumn.cellIDs.filter(
+          (c) => c !== cell._id
+        );
+        updateRightColumn({
+          ...rightColumn,
+          cellIDs: updatedRightCells,
+        });
+      }
+      const newCells = cells.filter((c) => c._id !== cell._id);
+      updateCells(newCells);
+
+      const res = await CellApi.removeCell([cell._id]);
+      if (!res.acknowledged) {
+        throw new Error("Couldn't delete cells");
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+    }
+  };
+  const blockTitleHandler = async () => {
+    updateEntireCellById(cell._id, {...cell, title: blockTitle});
+    const res = await CellApi.updateCell({...cell, title: blockTitle});
+
+
+  }
   return (
     <SettingsWrapper>
+      <Space.Compact>
+
       <Input
         placeholder="Block title"
         value={blockTitle}
-        bordered={false}
-        style={{
-          paddingLeft: 0,
-        }}
-      />
+        onChange={(e) => setBlockTitle(e.target.value)}
+        />
+      <Button onClick={blockTitleHandler}>
+        Save
+      </Button>
+        </Space.Compact>
       <BlockTags cell={cell} />
       <Space align="center" style={{ margin: "10px 0" }}>
         <Tooltip title="Delete" placement="bottom">
@@ -36,9 +97,10 @@ function BlockSettings({
         <Tooltip title="Change pin color" placement="top">
           <Select
             onChange={(value, option) => {
-              setPinColor(value);
+              changeColorHandler(value);
             }}
             placeholder="Select pin color"
+            value={cell.color}
           >
             {[...COVER_IMAGE_URLS, "cornflowerblue"].map((color, index) => {
               return (

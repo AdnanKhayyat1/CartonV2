@@ -9,3 +9,6 @@ export const getBase64 = (img, callback) => {
   reader.addEventListener("load", () => callback(reader.result));
   reader.readAsDataURL(img);
 };
+export const titleCase = (string) => {
+  return string[0].toUpperCase() + string.slice(1).toLowerCase();
+}

@@ -26,12 +26,13 @@ const updateObject = async (object) => {
   return response.data;
 };
 //Delete
-const removeObject = (object) => {
-  return HttpClient.delete(`${API}${object._id}`);
+const removeObject = async (id) => {
+  const r = await HttpClient.delete(`${OBJECT_API}/${id}`);
+  return r;
 };
 // Remove tag from all objects
 const removeTagFromObjects = async (tagID) => {
-  const response = await HttpClient.put(`${API}/tag/${tagID}`);
+  const response = await HttpClient.put(`${OBJECT_API}/tag/${tagID}`);
   return response;
 };
 //Encapsulating in a JSON object

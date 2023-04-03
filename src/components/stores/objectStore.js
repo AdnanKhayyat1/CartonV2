@@ -1,3 +1,4 @@
+
 import { create } from "zustand";
 import { updateObjectInServer } from "../../hooks/objectServices";
 import { devtools } from "zustand/middleware";
@@ -15,7 +16,7 @@ export const useObjectStore = create(
     },
     rightColumn: {
       showColumn: false,
-      cellsIDs: [],
+      cellIDs: [],
     },
     updateId: (id) => set(() => ({ _id: id })),
     updateTitle: (title) => set(() => ({ title: title })),
@@ -54,16 +55,17 @@ export const useObjectStore = create(
 );
 
 useObjectStore.subscribe((state) => {
-  updateObjectInServer({
-    title: state.title,
-    bio: state.bio,
-    tags: state.tags,
-    isTemplate: state.isTemplate,
-    properties: state.properties,
-    leftCol: state.leftColumn,
-    rightCol: state.rightColumn,
-    _id: state._id,
-  });
+  // console.log('SUBSCRIBE STATE', state);
+  // updateObjectInServer({
+  //   title: state.title,
+  //   bio: state.bio,
+  //   tags: state.tags,
+  //   isTemplate: state.isTemplate,
+  //   properties: state.properties,
+  //   leftCol: state.leftColumn,
+  //   rightCol: state.rightColumn,
+  //   _id: state._id,
+  // });
 });
 
 export default useObjectStore;

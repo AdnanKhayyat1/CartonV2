@@ -7,7 +7,6 @@ const CELL_API = `${API}/cell`;
 const createCell = (cell) => {
   return HttpClient.post(CELL_API, cell);
 };
-//Read ALL
 const getCellsByIds = async (cellIDs) => {
   const queryIDS = cellIDs.join(",");
   if (queryIDS !== "") {
@@ -31,8 +30,16 @@ const updateCell = (cell) => {
   return response;
 };
 //Delete
-const removeCell = (cell) => {
-  return HttpClient.delete(`${API}${cell._id}`);
+const removeCell = async (cellIDs) => {
+  const deleteIDS = cellIDs.join(",");
+  if (deleteIDS !== "") {
+    const { data: response } = await HttpClient.delete(
+      `${CELL_API}/?ids=${deleteIDS}`
+    );
+    return response;
+  }
+
+  return [];
 };
 // delete tag from all cells
 const deleteTagFromCells = async (tagID) => {

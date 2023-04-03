@@ -3,10 +3,12 @@ import styled from "styled-components";
 import { useCellStore } from "../stores/cellStore";
 import { supabase } from "../../api/supabaseClient";
 import { PictureOutlined } from "@ant-design/icons";
-import { Typography } from "antd";
+import { Typography, Alert, Space} from "antd";
 import { FaUnsplash, FaImage, FaGoogleDrive, FaRegFile } from "react-icons/fa";
 import { useMutation } from "react-query";
 import {CellApi} from "../../api/cellApi";
+
+
 const { Title } = Typography;
 
 function ImageBlock({ id, cell }) {
@@ -43,6 +45,7 @@ function ImageBlock({ id, cell }) {
       downloadImage(cell.data.file);
     }
   }, [cell]);
+
 
   const uploadImage = async (event) => {
     try {
@@ -100,15 +103,12 @@ function ImageBlock({ id, cell }) {
           <button onClick={removeImage}>Remove</button>
         </ImageContainer>
       )}
-      <UploadSection>
-        <Title level={5}>Upload a file here </Title>
-        <GridIcons>
-          <UploadIcon><FaUnsplash/></UploadIcon>
-          <UploadIcon onClick={triggerFileUpload}><FaImage/></UploadIcon>
-          <UploadIcon><FaGoogleDrive/></UploadIcon>
-          <UploadIcon><FaRegFile/></UploadIcon>
-        </GridIcons>
-      </UploadSection>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Alert banner message="For shareable files, use a public shareable link." type="warning" showIcon closable />
+        <Title level={5}>Enter a URL to import a file</Title>
+        <Typography.Text>URL can be a website, download, or image.</Typography.Text>
+
+      </Space>
       <input
         type="file"
         id="single-upload"
@@ -117,6 +117,7 @@ function ImageBlock({ id, cell }) {
         onChange={uploadImage}
         disabled={loading}
       />
+      
     </ImageWrapper>
   );
 }
@@ -151,17 +152,13 @@ const Image = styled.img`
   max-height: 100%;
 `;
 const ImageWrapper = styled.div`
-  padding-bottom: 25px;
-  padding-top: 25px;
   flex: 9 1;
   background-color: #e8ebf4;
   border-radius: 10px;
 `;
 const ImageContainer = styled.div`
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
   height: 200px;
 `;
 

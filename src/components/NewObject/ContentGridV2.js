@@ -40,6 +40,7 @@ function ContentGridV2() {
 
   useEffect(() => {
     if (isSuccess) {
+      console.log(data);
       initCells(data);
     }
   }, [isSuccess]);

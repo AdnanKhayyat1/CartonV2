@@ -7,6 +7,23 @@ import Code from "@editorjs/code";
 import SimpleImage from "@editorjs/simple-image";
 import Marker from "@editorjs/marker";
 import Tooltip from "editorjs-tooltip";
+import AttachesTool from '@editorjs/attaches';
+
+import {
+  red,
+  volcano,
+  gold,
+  orange,
+  yellow,
+  lime,
+  green,
+  cyan,
+  blue,
+  geekblue,
+  purple,
+  magenta,
+  grey,
+} from '@ant-design/colors';
 
 export const BLOCK_TOOLS = {
   header: {
@@ -36,6 +53,10 @@ export const BLOCK_TOOLS = {
       textColor: "#FDFEFE",
     },
   },
+  attaches: {
+    class: AttachesTool,
+    
+  }
 };
 
 export const DEFAULT_INITIAL_DATA = () => {
@@ -79,6 +100,20 @@ export const TAG_COLORS = [
   "geekblue",
   "purple",
 ];
+
+export const TAG_GALLERY_COLORS = {
+  "magenta" : magenta,
+  "red": red,
+  "volcano": volcano,
+  "orange": orange,
+  "gold": gold,
+  "lime": lime,
+  "green": green,
+  "cyan": cyan,
+  "blue": blue,
+  "geekblue": geekblue,
+  "purple": purple,
+};
 
 export const DEFAULT_OBJECT_CONFIG = [
   {

@@ -6,15 +6,17 @@ import Navbar from "./components/navbar/Navbar";
 import ObjectContainer from "./components/NewObject/ObjectContainer";
 import { supabase } from "./api/supabaseClient";
 
-import Graph from "./components/Graph/Graph";
 import { useAuthStore } from "./components/stores/authStore";
 import SideBarV2 from "./components/sidebar/SideBarV2";
-
+import TagGallery from "./components/Gallery/TagGallery";
 
 function App() {
   const [session, setSession] = useState(null);
-  const [userID, setUserID] = useAuthStore((state) => [state.userID, state.updateUserID])
-  
+  const [userID, setUserID] = useAuthStore((state) => [
+    state.userID,
+    state.updateUserID,
+  ]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -26,23 +28,27 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if(session && userID === '') {
+    if (session && userID === "") {
       setUserID(session.user.id);
     }
-
-  }, [userID, session])
+  }, [userID, session]);
 
   return (
     <Router>
       <div className="App">
         <div className="main-site">
-          {!!userID && <SideBarV2 userID={userID}/>}
+          {!!userID && <SideBarV2 userID={userID} />}
           <div className="content">
-            <Navbar />
+            {!!userID && <Navbar />}
             <Routes>
               <Route exact path="/" element={<Home />} />
-              <Route exact path="/newobject/:id" element={<ObjectContainer />} />
-              <Route exact path="/graph" element={<Graph />} />
+              <Route
+                exact
+                path="/newobject/:id"
+                element={<ObjectContainer />}
+              />
+              {/* <Route exact path="/graph" element={</>} /> */}
+              <Route exact path="/tag/:id" element={<TagGallery />} />
             </Routes>
           </div>
         </div>

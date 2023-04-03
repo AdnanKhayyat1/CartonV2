@@ -10,7 +10,7 @@ import { CellApi } from "../../api/cellApi";
 import { useMutation } from "react-query";
 const EDITTOR_HOLDER_ID = "editorjs";
 
-const Editor = ({cell}) => {
+const Editor = ({cell , isReadOnly = false}) => {
   const ejInstance = useRef(null);
   const customID = `${EDITTOR_HOLDER_ID}-${cell._id}`;
   const updateEditorData = useCellStore((state) => state.updateCellById);
@@ -57,6 +57,7 @@ const Editor = ({cell}) => {
         );
       },
       tools: BLOCK_TOOLS,
+      readOnly: isReadOnly
     });
   };
 

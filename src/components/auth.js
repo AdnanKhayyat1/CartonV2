@@ -1,49 +1,82 @@
-import { useState } from 'react'
-import { supabase } from '../api/supabaseClient'
-
+import { useState } from "react";
+import styled from "styled-components";
+import { supabase } from "../api/supabaseClient";
+import logo from "../components/sidebar/logo.png";
+import { Form, Input, Button, Typography } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 export default function Auth() {
-  const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-
+  const handleLogin = async (values) => {
+    const email = values.email;
     try {
-      setLoading(true)
-      const { error } = await supabase.auth.signInWithOtp({ email })
-      if (error) throw error
-      alert('Check your email for the login link!')
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOtp({ email });
+      if (error) throw error;
+      alert("Check your email for the login link!");
     } catch (error) {
-      alert(error.error_description || error.message)
+      alert(error.error_description || error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="row flex-center flex">
+    <LoginWrapper>
       <div className="col-6 form-widget" aria-live="polite">
-        <h1 className="header">Supabase + React</h1>
-        <p className="description">Sign in via magic link with your email below</p>
+        <img src={logo}></img>
+        <Typography.Title
+          level={2}
+          style={{ marginBottom: "1px", textAlign: "left" }}
+        >
+          Login
+        </Typography.Title>
+        <Typography.Text>
+          Sign in via magic link with your email below
+        </Typography.Text>
         {loading ? (
-          'Sending magic link...'
+          <Typography.Text>Sending magic link...</Typography.Text>
         ) : (
-          <form onSubmit={handleLogin}>
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              className="inputField"
-              type="email"
-              placeholder="Your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button className="button block" aria-live="polite">
-              Send magic link
-            </button>
-          </form>
+          <Form
+            name="normal_login"
+            className="login-form"
+            initialValues={{ remember: true }}
+            style={{ marginTop: "1em" }}
+            onFinish={handleLogin}
+          >
+            <Form.Item
+              name="email"
+              rules={[{ required: true, message: "Please input your email!" }]}
+            >
+              <Input
+                prefix={<UserOutlined className="site-form-item-icon" />}
+                placeholder="Your email"
+                type="email"
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" block>
+                Log in
+              </Button>
+            </Form.Item>
+          </Form>
         )}
       </div>
-    </div>
-  )
+    </LoginWrapper>
+  );
 }
+const LoginWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  background-color: #e8ebf4;
+  padding: 4em;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+
+  position: absolute;
+  top: 20%;
+  left: 40%;
+`;
