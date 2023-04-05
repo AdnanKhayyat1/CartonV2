@@ -43,13 +43,14 @@ function GridColumn({ cells, addRow }) {
       {cells.map((cell) => {
        return <GridRow key={cell._id} cell={cell} id={cell._id} />;
       })}
-      <Dropdown menu={{ items, onClick }}>
+      <Dropdown menu={{ items, onClick }} disabled>
         <Button
           block
           style={{ marginTop: "10px", maxWidth: "50%" }}
           onClick={(e) => {
             e.preventDefault();
           }}
+
         >
           Add Row
         </Button>
