@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./styles/index.css";
 import App from "./App";
-import disableReactDevTools from "@fvilers/disable-react-devtools";
+import {disableReactDevTools} from "@fvilers/disable-react-devtools";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 
