@@ -9,18 +9,19 @@ import styled from "styled-components";
 import { LinkOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { TAG_COLORS } from "../../tools/constants";
 import { Button, Select, Tag, Spin } from "antd";
-import { useCellStore } from '../stores/cellStore';
-import { ObjectApi } from '../../api/objectApi';
-import { CellApi } from '../../api/cellApi';
+import { useCellStore } from "../stores/cellStore";
+import { ObjectApi } from "../../api/objectApi";
+import { CellApi } from "../../api/cellApi";
 
 function Tags() {
   const userID = useAuthStore((state) => state.userID);
-  const [isLoading_ , setIsLoading] = useState(false);
+  const [isLoading_, setIsLoading] = useState(false);
 
   const [tags, updateTags] = useTagStore(
     (state) => [state.tags, state.updateTags],
     shallow
   );
+  const objectID = useObjectStore((state) => state._id);
   const [objectTagIDs, updateObjectTagsIDs] = useObjectStore(
     (state) => [state.tags, state.updateTags],
     shallow
@@ -44,13 +45,24 @@ function Tags() {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
   const createTag = async () => {
-    const res = await TagApi.createTag({
-      name: newTagName,
-      color: TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)],
-      userID: userID,
-    });
-    const newTag = res.data;
-    updateTags([...tags, newTag]);
+    try {
+      const res = await TagApi.createTag({
+        name: newTagName,
+        color: TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)],
+        userID: userID,
+      });
+      const newTag = res.data;
+      updateTags([...tags, newTag]);
+
+      const updatedTags = [...objectTagIDs, newTag._id];
+      const resObj = await ObjectApi.updateObject({
+        _id: objectID,
+        tags: updatedTags,
+      });
+      if (!resObj) throw new Error("Object not updated -- tags");
+    } catch (err) {
+      console.log(err);
+    }
   };
   const _onTagInputChange = (event) => {
     setNewTagName(event.target.value);
@@ -164,6 +176,7 @@ function Tags() {
           {isDropDownOpen && (
             <DropdownTags>
               <DropdownPrompt>Select a tag or create one</DropdownPrompt>
+              <Button icon={<CloseCircleOutlined/>} onClick={() => setIsDropDownOpen(false)}/>
 
               <TagOptions>
                 {tags.map((tag, index) => {
