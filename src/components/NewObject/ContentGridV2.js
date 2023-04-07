@@ -14,6 +14,7 @@ import { useMutation } from "react-query";
 import { ObjectApi } from "../../api/objectApi";
 import { useCellStore } from "../stores/cellStore";
 function ContentGridV2() {
+  const objectID = useObjectStore((state) => state._id, shallow);
   const [leftColumn, setLeftColumn] = useObjectStore((state) => [
     state.leftColumn,
     state.updateLeftColumn,
@@ -65,16 +66,26 @@ function ContentGridV2() {
     return cells.filter((cell) => cellIds.includes(cell._id));
   };
   const addCell = async (key, column = "left") => {
-    const response = await createCell.mutateAsync(key);
-    if (response.data) {
-      const newCell = response.data;
+    try {
+      const response = await createCell.mutateAsync(key);
+      if (response.data) {
+        const newCell = response.data;
 
-      setCells(newCell);
-      if (column === "left") {
-        updateLeftCells(newCell._id);
-      } else {
-        updateRightCells(newCell._id);
+        setCells(newCell);
+        if (column === "left") {
+          updateLeftCells(newCell._id);
+        } else {
+          updateRightCells(newCell._id);
+        }
+        const res = await ObjectApi.updateObject({
+          _id: objectID,
+          leftColumn: leftColumn,
+          rightColumn: rightColumn,
+        });
+        if (!res) throw new Error("Couldnt add cell to object");
       }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -119,10 +130,7 @@ function ContentGridV2() {
         )}
 
         {!bothColsOpen() && (
-          <PlusCircleOutlined
-            className="add-button"
-            onClick={showColumn}
-          />
+          <PlusCircleOutlined className="add-button" onClick={showColumn} />
         )}
       </div>
       <div className="grid-container">
