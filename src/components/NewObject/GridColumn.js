@@ -14,17 +14,17 @@ import EmbeddedObject from "./EmbeddedObject";
 import styled from "styled-components";
 const items = [
   {
-    label: "Block",
+    label: "Section",
     key: "editor",
   },
-  {
-    label: "Object",
-    key: "object",
-  },
-  {
-    label: "Image",
-    key: "image",
-  },
+  // {
+  //   label: "Object",
+  //   key: "object",
+  // },
+  // {
+  //   label: "Image",
+  //   key: "image",
+  // },
 ];
 
 function GridColumn({ cells, addRow }) {
@@ -43,7 +43,7 @@ function GridColumn({ cells, addRow }) {
       {cells.map((cell) => {
        return <GridRow key={cell._id} cell={cell} id={cell._id} />;
       })}
-      <Dropdown menu={{ items, onClick }} disabled>
+      <Dropdown menu={{ items, onClick }}>
         <Button
           block
           style={{ marginTop: "10px", maxWidth: "50%" }}

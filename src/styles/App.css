@@ -16,6 +16,7 @@
 .content{
   flex: 1;
   transition: all 0.3s ease;
+  background-color: white;
 }
 html, body, #root, .App {
   height: 100%;

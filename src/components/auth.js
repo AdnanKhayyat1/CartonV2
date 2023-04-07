@@ -11,9 +11,12 @@ export default function Auth() {
     const email = values.email;
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({ email, options: {
-        emailRedirectTo: 'https://carton-xj05.onrender.com'
-      }});
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: "https://carton-xj05.onrender.com",
+        },
+      });
       if (error) throw error;
       alert("Check your email for the login link!");
     } catch (error) {

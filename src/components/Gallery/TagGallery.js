@@ -4,7 +4,7 @@ import GridRow from "../NewObject/GridRow";
 import { useCellStore } from "../stores/cellStore";
 import { useParams } from "react-router-dom";
 import { TAG_GALLERY_COLORS } from "../../tools/constants";
-import { titleCase } from "../../tools/utils";
+import { titleCase } from "../../tools/utils_";
 import { useTagStore } from "../stores/tagStore";
 import { shallow } from "zustand/shallow";
 import { Typography } from "antd";
