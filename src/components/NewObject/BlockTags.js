@@ -129,13 +129,13 @@ function BlockTags({ cell }) {
           <Divider
             orientation="left"
             plain
-            style={{ fontWeight: "600", margin: "8px 0px" }}
+            style={{ fontWeight: "600", margin: "8px 0px", marginBottom: '0px' }}
             orientationMargin={0}
           >
             <Button
               icon={
                 isDropDownOpen ? (
-                  <CloseCircleOutlined />
+                  <CloseCircleOutlined style={{ color: "red" }}/>
                 ) : (
                   <PlusOutlined style={{ color: "gray" }} />
                 )
@@ -214,7 +214,6 @@ const TagOption = styled.div`
   width: 100%;
 `;
 const DropdownPrompt = styled.div`
-  margin-top: 5px;
   margin-bottom: 5px;
   padding-right: 5px;
   font-weight: 600;
@@ -240,6 +239,8 @@ const DropdownTags = styled.div`
 
   max-height: 300px;
   padding: 10px;
+  padding-top: 0px;
+
   border-radius: 0px 0px 8px 8px;
 
   z-index: 10;

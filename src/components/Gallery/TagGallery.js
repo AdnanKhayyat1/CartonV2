@@ -27,8 +27,10 @@ function TagGallery() {
   }, [tags, tagID]);
 
   useEffect(() => {
+  
     const taggedCells = cells.filter((cell) => cell.tags.includes(tagID));
     setShowTaggedCell(taggedCells);
+
   }, [cells]);
 
   return (
@@ -58,7 +60,7 @@ function TagGallery() {
                 <DisconnectOutlined style={{ fontSize: "2em" }} />
                 <Typography.Title level={5}>
                   You have no items tagged with {titleCase(selectedTag.name)}.
-                  <br /> Go tag some stuff!
+                  <br /> Note: Tag Gallery does NOT show tagged pages, only sections.
                 </Typography.Title>
               </NoItemsYet>
             )}
@@ -98,5 +100,6 @@ const Gallery = styled.div`
   grid-auto-flow: row;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
+  padding: 10px;
 `;
 export default TagGallery;

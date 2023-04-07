@@ -52,14 +52,13 @@ function Tags() {
         userID: userID,
       });
       const newTag = res.data;
-      updateTags([...tags, newTag]);
-
       const updatedTags = [...objectTagIDs, newTag._id];
       const resObj = await ObjectApi.updateObject({
         _id: objectID,
         tags: updatedTags,
       });
       if (!resObj) throw new Error("Object not updated -- tags");
+      updateTags([...tags, newTag]);
     } catch (err) {
       console.log(err);
     }
@@ -76,16 +75,35 @@ function Tags() {
 
   // check if tag id exists in tag list of object
   // if false, add tag to object tags
-  const tagOptionClickHandler = (event) => {
+  const tagOptionClickHandler = async (event) => {
     const tagID = event.target.id;
-    if (!objectTagIDs.includes(tagID)) {
-      updateObjectTagsIDs([...objectTagIDs, tagID]);
+    try {
+      if (!objectTagIDs.includes(tagID)) {
+        const newTags = [...objectTagIDs, tagID];
+        const res = await ObjectApi.updateObject({
+          _id: objectID,
+          tags: newTags,
+        });
+        if (!res) throw new Error("Couldnt assign tag to object");
+        updateObjectTagsIDs(newTags);
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
-  const deselectTagHandler = (index) => {
-    const newTagIDs = [...objectTagIDs];
-    newTagIDs.splice(index, 1);
-    updateObjectTagsIDs(newTagIDs);
+  const deselectTagHandler = async (index) => {
+    try {
+      const newTagIDs = [...objectTagIDs];
+      newTagIDs.splice(index, 1);
+      const res = await ObjectApi.updateObject({
+        _id: objectID,
+        tags: newTagIDs,
+      });
+      if (!res) throw new Error("Couldnt deselect tag from object");
+      updateObjectTagsIDs(newTagIDs);
+    } catch (err) {
+      console.log(err);
+    }
   };
   const deleteTagsFromCellStore = useCellStore(
     (state) => state.deleteTagFromAllCells,
@@ -176,7 +194,10 @@ function Tags() {
           {isDropDownOpen && (
             <DropdownTags>
               <DropdownPrompt>Select a tag or create one</DropdownPrompt>
-              <Button icon={<CloseCircleOutlined/>} onClick={() => setIsDropDownOpen(false)}/>
+              <Button
+                icon={<CloseCircleOutlined />}
+                onClick={() => setIsDropDownOpen(false)}
+              />
 
               <TagOptions>
                 {tags.map((tag, index) => {

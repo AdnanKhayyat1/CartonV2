@@ -15,14 +15,14 @@ import { ObjectApi } from "../../api/objectApi";
 import { useCellStore } from "../stores/cellStore";
 function ContentGridV2() {
   const objectID = useObjectStore((state) => state._id, shallow);
-  const [leftColumn, setLeftColumn] = useObjectStore((state) => [
-    state.leftColumn,
-    state.updateLeftColumn,
-  ]);
-  const [rightColumn, setRightColumn] = useObjectStore((state) => [
-    state.rightColumn,
-    state.updateRightColumn,
-  ]);
+  const [leftColumn, setLeftColumn] = useObjectStore(
+    (state) => [state.leftColumn, state.updateLeftColumn],
+    shallow
+  );
+  const [rightColumn, setRightColumn] = useObjectStore(
+    (state) => [state.rightColumn, state.updateRightColumn],
+    shallow
+  );
   const [cells, setCells, initCells] = useCellStore(
     (state) => [state.cells, state.updateCells, state.initCells],
     shallow
@@ -70,19 +70,34 @@ function ContentGridV2() {
       const response = await createCell.mutateAsync(key);
       if (response.data) {
         const newCell = response.data;
-
         setCells(newCell);
+
+        const currentCellIDs =
+          column === "left" ? leftColumn.cellIDs : rightColumn.cellIDs;
+        const newCellIDs = [...currentCellIDs, newCell._id];
         if (column === "left") {
+          const res = await ObjectApi.updateObject({
+            _id: objectID,
+            leftCol: {
+              ...leftColumn,
+              cellIDs: newCellIDs,
+            },
+          });
+          if (!res) throw new Error("Couldnt add cell to left object");
           updateLeftCells(newCell._id);
         } else {
+          const res = await ObjectApi.updateObject({
+            _id: objectID,
+            rightCol: {
+              ...rightColumn,
+              cellIDs: newCellIDs,
+            },
+          });
+          if (!res) throw new Error("Couldnt add cell to right object");
           updateRightCells(newCell._id);
         }
-        const res = await ObjectApi.updateObject({
-          _id: objectID,
-          leftColumn: leftColumn,
-          rightColumn: rightColumn,
-        });
-        if (!res) throw new Error("Couldnt add cell to object");
+      } else {
+        throw new Error("Cell creation failed!");
       }
     } catch (e) {
       console.error(e);
