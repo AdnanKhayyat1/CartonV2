@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "./navbar.css";
 import {
   DoubleLeftOutlined,
@@ -9,9 +9,17 @@ import {
 } from "@ant-design/icons";
 import { Button, Modal, Tooltip, Space, Typography } from "antd";
 import Search from "./search";
+
 import { useAuthStore } from "../stores/authStore";
 import { shallow } from "zustand/shallow";
 import styled from "styled-components";
+import "reactflow/dist/style.css";
+
+import GraphModal from "../Modals/GraphModal";
+
+// ----------------------------------------------------------------
+// NAVBAR COMPONENT
+// ----------------------------------------------------------------
 const Navbar = () => {
   const [isSidebarActive, setIsSidebarActive] = useAuthStore(
     (state) => [state.isSidebarOpen, state.updateIsSidebarOpen],
@@ -21,7 +29,10 @@ const Navbar = () => {
   const handleSidebarClick = () => {
     setIsSidebarActive(!isSidebarActive);
   };
-  const graphModalHandler = () => setIsGraphModal(!isGraphModal);
+  const graphModalHandler = async () => {
+    setIsGraphModal(!isGraphModal);
+  };
+
   return (
     <div className="nav-container">
       <div className="navbar__item">
@@ -72,18 +83,11 @@ const Navbar = () => {
             View Graph
           </Button>
         </Tooltip>
-        <Modal
-          open={isGraphModal}
-          onCancel={graphModalHandler}
-          onOk={graphModalHandler}
-        >
-          <Space direction="vertical" align='center'>
-            <MehOutlined style={{fontSize: '3em'}}/>
-            <Typography.Title level={3} style={{marginTop: '2px'}}>Womp, Womp.</Typography.Title>
-            <Typography.Text>This feature is not available yet. We're working hard to release it ASAP.</Typography.Text>
-          </Space>
-        </Modal>
       </div>
+      <GraphModal
+        isGraphModal={isGraphModal}
+        graphModalHandler={graphModalHandler}
+      />
     </div>
   );
 };
