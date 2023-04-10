@@ -114,7 +114,7 @@ function GraphModal({ graphModalHandler, isGraphModal }) {
             onEngineStop={() => fgRef.current.zoomToFit(400,100)}
             
             width={700}
-            height={700}
+            height={500}
             onNodeClick={(node, event) => {
                 if(node.type === 'block'){
                     navigate(`/newobject/${node.parent}`)

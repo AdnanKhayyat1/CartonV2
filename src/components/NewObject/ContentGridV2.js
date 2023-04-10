@@ -140,7 +140,7 @@ function ContentGridV2() {
 
   return (
     <>
-      <div className="grid-container-header">
+      {/* <div className="grid-container-header">
         {leftColumn.showColumn && (
           <div className="grid-col-header">
             <div className="header-delete-btn">
@@ -173,7 +173,7 @@ function ContentGridV2() {
         {!bothColsOpen() && (
           <PlusCircleOutlined className="add-button" onClick={showColumn} />
         )}
-      </div>
+      </div> */}
       <div className="grid-container" useRef={containerRef}>
         {leftColumn.showColumn && (
           <GridColumn
@@ -188,7 +188,7 @@ function ContentGridV2() {
           />
         )}
 
-        <FloatButton.Group
+        {/* <FloatButton.Group
           style={{ right: "3%" }}
           trigger="click"
           icon={<PlusCircleOutlined />}
@@ -235,7 +235,7 @@ function ContentGridV2() {
               }}
             />
           </Tooltip>
-        </FloatButton.Group>
+        </FloatButton.Group> */}
       </div>
     </>
   );
