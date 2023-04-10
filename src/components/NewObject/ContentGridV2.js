@@ -57,11 +57,11 @@ function ContentGridV2() {
       await ObjectApi.updateObject({
         _id: objectID,
         leftCol: {
-          ...leftColumn
+          ...leftColumn,
           showColumn: leftColumn.showColumn,
         },
         rightCol: {
-          ...rightColumn
+          ...rightColumn,
           showColumn: rightColumn.showColumn,
         }
       })
