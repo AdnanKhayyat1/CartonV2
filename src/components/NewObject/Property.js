@@ -66,10 +66,9 @@ function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
   };
 
   const onValueChange = (e) => {
-    console.log(e);
     onUpdate({
       key: propKey,
-      value: e.target.value,
+      value: propType === 'date' ? e.toString() : e.target.value,
       type: propType,
     });
   };
@@ -109,7 +108,7 @@ function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
       case "text":
         return (
           <Input
-            style={{ width: "calc(50% - 200px)" }}
+            style={{ width: "calc(50% - 100px)" }}
             value={propValue}
             bordered={false}
             onChange={onValueChange}
@@ -119,7 +118,7 @@ function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
       case "relation":
         return (
           <Select
-            style={{ width: "calc(50% - 200px)" }}
+            style={{ width: "calc(50% - 100px)" }}
             value={propValue}
             prefix-icon={<CalendarOutlined />}
             placeholder="Select item"
@@ -132,7 +131,7 @@ function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
       case "date":
         return (
           <DatePicker
-            style={{ width: "calc(50% - 200px)" }}
+            style={{ width: "calc(50% - 100px)" }}
             bordered={false}
             onChange={onValueChange}
           />
@@ -157,7 +156,7 @@ function Property({ propKey, propValue = "", propType, onUpdate, onDelete }) {
           value={propKey}
           placeholder="Property name"
           style={{
-            width: "calc(50% - 200px)",
+            width: "calc(50% - 100px)",
             color: "rgb(0,0,0,0.5)",
             opacity: "100%",
           }}

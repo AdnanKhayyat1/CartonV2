@@ -1,4 +1,3 @@
-
 import { create } from "zustand";
 import { updateObjectInServer } from "../../hooks/objectServices";
 import { devtools } from "zustand/middleware";
@@ -50,7 +49,6 @@ export const useObjectStore = create(
         false,
         "addCellToRightColumn"
       ),
-      
   }))
 );
 

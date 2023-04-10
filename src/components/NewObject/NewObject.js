@@ -25,13 +25,14 @@ import CreateTemplateModal from "./CreateTemplateModal";
 import useObjectStore from "../stores/objectStore";
 import { useAuthStore } from "../stores/authStore";
 import ObjectSidebar from "./ObjectSidebar";
-import { notification } from 'antd'
-
+import { notification } from "antd";
 
 const Wrapper = styled.div`
   border-radius: 10px;
   max-width: fit-content;
   margin: 10px auto;
+  height: 90vh;
+
 `;
 
 function NewObject({ id }) {
@@ -87,20 +88,18 @@ function NewObject({ id }) {
   };
 
   const openNotificationWithIcon = (type) => {
-    if(type === 'success') {
-      api['success']({
-        message: 'Succesfully saved as template',
+    if (type === "success") {
+      api["success"]({
+        message: "Succesfully saved as template",
         description:
-          'You can now create new pages like this one. Templates preserve layout, tags, style, and property keys.',
+          "You can now create new pages like this one. Templates preserve layout, tags, style, and property keys.",
       });
-    } else if(type==='info' ) {
-      api['info']({
-        message: 'Template deleted',
-        description:
-          'Your page is no longer a template.',
+    } else if (type === "info") {
+      api["info"]({
+        message: "Template deleted",
+        description: "Your page is no longer a template.",
       });
     }
-
   };
 
   useEffect(() => {
@@ -138,7 +137,6 @@ function NewObject({ id }) {
 
     return () => clearTimeout(delayDebounceFn);
   }, [title, bio, properties, isTemplate]);
-
   if (isLoading) {
     return <Spin />;
   }
@@ -148,16 +146,19 @@ function NewObject({ id }) {
   return (
     <Wrapper>
       {contextHolder}
-      <ObjectSidebar setIsTemplate={setIsTemplate} triggerNotification={openNotificationWithIcon} isTemplate={isTemplate}/>
+      <ObjectSidebar
+        setIsTemplate={setIsTemplate}
+        triggerNotification={openNotificationWithIcon}
+        isTemplate={isTemplate}
+  
+      />
       <Drawer
         title="Style"
         placement="right"
         onClose={onClose}
         open={openStyle}
         forceRender
-      >
-        
-      </Drawer>
+      ></Drawer>
       <div
         className="object-app"
         style={{
@@ -167,7 +168,6 @@ function NewObject({ id }) {
         }}
       >
         <div className="header-main">
-          
           <div className="title-wrapper">
             <Input
               placeholder="New Page Title"

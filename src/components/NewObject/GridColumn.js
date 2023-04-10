@@ -1,17 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { Dropdown, Button, Popover } from "antd";
+import { Dropdown, Button, Tooltip, Affix } from "antd";
+import { PlusCircleOutlined } from '@ant-design/icons'
 import GridRow from "./GridRow";
-import { CellApi } from "../../api/cellApi";
-import { useQuery, useMutation } from "react-query";
-import { useObjectStore } from "./NewObject";
-import { create } from "zustand";
-import { shallow } from "zustand/shallow";
-import Editor from "../object/Editor";
-import { devtools } from "zustand/middleware";
-import { useCellStore } from "./ContentGridV2";
-import ImageBlock from "./ImageBlock";
-import EmbeddedObject from "./EmbeddedObject";
 import styled from "styled-components";
+
 const items = [
   {
     label: "Section",
@@ -39,25 +31,14 @@ function GridColumn({ cells, addRow }) {
   );
 
   return (
-    <div className="grid-column" style={{ maxWidth: "45vw" }}>
+    <div className="grid-column" style={{ width:  "45vw" }}>
       {cells.map((cell) => {
        return <GridRow key={cell._id} cell={cell} id={cell._id} />;
       })}
-      <Dropdown menu={{ items, onClick }}>
-        <Button
-          block
-          style={{ marginTop: "10px", maxWidth: "50%" }}
-          onClick={(e) => {
-            e.preventDefault();
-          }}
-
-        >
-          Add Row
-        </Button>
-      </Dropdown>
     </div>
   );
 }
+
 const CellTimeline = styled.div`
   flex: 0.5;
   position: relative;

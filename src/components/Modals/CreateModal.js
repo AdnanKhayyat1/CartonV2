@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Space, Button, Divider, List, Card } from "antd";
 import { useMutation } from "react-query";
 import { FileOutlined, PlusCircleOutlined } from "@ant-design/icons";
@@ -8,17 +8,31 @@ import { useNavigate } from "react-router-dom";
 
 function CreateModal({ createModalVisible, setCreateModalVisible, templates, userID }) {
   const navigate = useNavigate();
-  const createNewPage = () => {
-    createNewObjectMutation.mutate({userID: userID});
-    setCreateModalVisible(false);
-  };
-  const createNewObjectMutation = useMutation(ObjectApi.createObject, {
-    onSuccess: (data) => {
-      if (data) {
-        navigate(`/newobject/${data.data.data._id}`);
+  const [isLoading, setIsLoading] = useState(false);
+  const createNewPage = async () => {
+    try{
+      setIsLoading(true);
+
+      const newPage = await ObjectApi.createObject({userID: userID});
+      if(!newPage) throw new Error('Couldn\'t create new page');
+      const defaultCell = await CellApi.createCell();
+      if(!defaultCell) throw new Error('Couldn\'t create default cell');
+      const updatedPage = {
+        ...newPage.data.data,
+        leftCol: {
+          showColumn: true,
+          cellIDs: [defaultCell.data._id]
+        }
       }
-    },
-  });
+      const resPage = await ObjectApi.updateObject(updatedPage);
+      if(!resPage) throw new Error('Couldn\'t update page');
+      navigate(`/newobject/${updatedPage._id}`)
+    } catch(e){
+      console.log(e);
+    } finally{
+      setIsLoading(false);
+    }
+  };
   const createNewCellFromTemplate = async (cellID) => {
     // here we do type checking
     // get cell by id and check type
@@ -71,10 +85,11 @@ function CreateModal({ createModalVisible, setCreateModalVisible, templates, use
   };
   return (
     <Modal
-      title="New object"
+      title="New Page"
       open={createModalVisible}
       onOk={handleOk}
       onCancel={handleCancel}
+      confirmLoading={isLoading}
     >
       <Space direction="vertical" size="middle" style={{ display: "flex" }}>
         <p>Select from a list of templates, or start from scratch.</p>

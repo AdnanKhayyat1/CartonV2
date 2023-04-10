@@ -1,5 +1,31 @@
-.ant-modal-content{
-    padding: 0 !important;
-    background-color: #343A42 !important;
-    overflow: hidden !important;;
+ .modal-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+   
+}
+.graph-modal{
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background-color:#343A42;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+}
+.graph-header{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

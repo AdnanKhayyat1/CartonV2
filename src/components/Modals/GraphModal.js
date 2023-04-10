@@ -8,7 +8,7 @@ import {
   MehOutlined,
   CloseOutlined
 } from "@ant-design/icons";
-import { Button, Modal, Tooltip, Space, Typography } from "antd";
+import { Button, Tooltip, Space, Typography } from "antd";
 
 import { CellApi } from "../../api/cellApi";
 import { ObjectApi } from "../../api/objectApi";
@@ -24,9 +24,11 @@ function GraphModal({ graphModalHandler, isGraphModal }) {
   const [edges, setEdges] = useState([]);
   const navigate = useNavigate();
   const fgRef = useRef();
+
   useEffect(() => {
     initGraph();
   }, []);
+
 
   const initGraph = async () => {
     try {
@@ -93,16 +95,14 @@ function GraphModal({ graphModalHandler, isGraphModal }) {
     }
   };
   return (
-    <Modal
-      open={isGraphModal}
-      onCancel={graphModalHandler}
-      onOk={graphModalHandler}
-      width={700}
-      footer={null}
-      closeIcon={<CloseOutlined style={{color:"white"}}/>}
-      
-    >
-      {graphReady && (
+<>      {isGraphModal && graphReady && (
+        <div className="graph-modal">
+          <div className="graph-header">
+            <Typography.Title level={5} style={{marginTop: 0, color: 'white'}}>Graph View</Typography.Title>
+            <Button icon={<CloseOutlined style={{color: 'white'}}/>} type="text" onClick={graphModalHandler}></Button>
+          </div>
+
+     
           <ForceGraph2D
             graphData={{
               nodes: nodes,
@@ -141,9 +141,11 @@ function GraphModal({ graphModalHandler, isGraphModal }) {
               ctx.fillText(label, node.x, node.y + (3 * globalScale));
             }}
           />
+          </div>
     
       )}
-    </Modal>
+      </>
+  
   );
 }
 

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "antd";
+import { Button, FloatButton, Tooltip } from "antd";
 
-import { PlusCircleOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  PlusCircleOutlined,
+  DeleteOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
 import "./newObject.css";
 import GridColumn from "./GridColumn";
 import { create } from "zustand";
@@ -13,6 +18,7 @@ import { CellApi } from "../../api/cellApi";
 import { useMutation } from "react-query";
 import { ObjectApi } from "../../api/objectApi";
 import { useCellStore } from "../stores/cellStore";
+import styled from "styled-components";
 function ContentGridV2() {
   const objectID = useObjectStore((state) => state._id, shallow);
   const [leftColumn, setLeftColumn] = useObjectStore(
@@ -33,7 +39,7 @@ function ContentGridV2() {
     (state) => state.addCellToRightColumn
   );
   const allCells = leftColumn.cellIDs.concat(rightColumn.cellIDs);
-
+  const [containerRef, setContainerRef] = useState(null);
   const { isLoading, isError, data, isSuccess } = useQuery(
     ["cells", allCells],
     () => CellApi.getCellsByIds(allCells)
@@ -45,6 +51,24 @@ function ContentGridV2() {
       initCells(data);
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    const updateColumns = async () => {
+      await ObjectApi.updateObject({
+        _id: objectID,
+        leftCol: {
+          showColumn: leftColumn.showColumn,
+        },
+        rightCol: {
+          showColumn: rightColumn.showColumn,
+        }
+      })
+    }
+    if (objectID && leftColumn && rightColumn){
+      updateColumns();
+    }
+
+  }, [leftColumn.showColumn, rightColumn.showColumn])
 
   const bothColsOpen = () => {
     return leftColumn.showColumn && rightColumn.showColumn;
@@ -148,7 +172,7 @@ function ContentGridV2() {
           <PlusCircleOutlined className="add-button" onClick={showColumn} />
         )}
       </div>
-      <div className="grid-container">
+      <div className="grid-container" useRef={containerRef}>
         {leftColumn.showColumn && (
           <GridColumn
             cells={_filterCells(leftColumn.cellIDs)}
@@ -161,9 +185,67 @@ function ContentGridV2() {
             addRow={(type) => addCell(type, "right")}
           />
         )}
+
+        <FloatButton.Group
+          style={{ right: "3%" }}
+          trigger="click"
+          icon={<PlusCircleOutlined />}
+        >
+          <Tooltip
+            title={() => {
+              return (
+                <TooltipContent>
+                  <div style={{ marginRight: "2px" }}>
+                    Add new block to the left
+                  </div>
+                </TooltipContent>
+              );
+            }}
+            placement="left"
+          >
+            <FloatButton
+              icon={<MenuFoldOutlined />}
+              size="large"
+              shape="circle"
+              onClick={(e) => {
+                addCell("editor", "left");
+              }}
+            />
+          </Tooltip>
+          <Tooltip
+            title={() => {
+              return (
+                <TooltipContent>
+                  <div style={{ marginRight: "2px" }}>
+                    Add new block to the right
+                  </div>
+                </TooltipContent>
+              );
+            }}
+            placement="left"
+          >
+            <FloatButton
+              icon={<MenuUnfoldOutlined />}
+              size="large"
+              shape="circle"
+              onClick={(e) => {
+                addCell("editor", "right");
+              }}
+            />
+          </Tooltip>
+        </FloatButton.Group>
       </div>
     </>
   );
 }
-
+const AddSectionButton = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  padding: 0.5em;
+`;
+const TooltipContent = styled.div`
+  display: flex;
+  width: 100%;
+`;
 export default ContentGridV2;

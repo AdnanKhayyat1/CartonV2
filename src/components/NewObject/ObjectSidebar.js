@@ -7,6 +7,7 @@ import {
   PlusCircleOutlined,
   CloseCircleOutlined,
   LayoutOutlined,
+  ArrowsAltOutlined,
   UpOutlined,
   MacCommandOutlined,
 } from "@ant-design/icons";
@@ -54,9 +55,11 @@ function ObjectSidebar({ setIsTemplate, isTemplate, triggerNotification }) {
               </TooltipContent>
             );
           }}
+
           placement="left"
         >
           <Button
+            type="text"
             className="header-btn"
             icon={<HighlightOutlined />}
             onClick={() => {
@@ -67,7 +70,8 @@ function ObjectSidebar({ setIsTemplate, isTemplate, triggerNotification }) {
               }
             }}
             block
-            type="text"
+            disabled
+           
           />
         </Tooltip>
 
@@ -115,6 +119,27 @@ function ObjectSidebar({ setIsTemplate, isTemplate, triggerNotification }) {
             }}
             type="text"
             block
+          />
+        </Tooltip>
+        <Tooltip
+          title={() => {
+            return (
+              <TooltipContent>
+                <div style={{ marginRight: "2px", whiteSpace: "nowrap" }}>
+                  Expand writing space
+                </div>
+              </TooltipContent>
+            );
+          }}
+          placement="left"
+        >
+          <Button
+            className="header-btn"
+            icon={<ArrowsAltOutlined />}
+            
+            type="text"
+            block
+            disabled
           />
         </Tooltip>
       </CollapsedSidebar>

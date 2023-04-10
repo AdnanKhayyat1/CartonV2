@@ -12,6 +12,8 @@ import { Button } from "antd";
 import img from "./db-img.jpg";
 import CreateModal from "../Modals/CreateModal";
 import DeleteObject from "../Modals/DeleteObject";
+import { Empty } from "antd";
+
 function MainDashboard({ userID }) {
   const [objects, setObjects] = useState([]);
   const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -62,32 +64,31 @@ function MainDashboard({ userID }) {
         objects={objects}
       />
       <Header>
-        <h2>Select Object</h2>
+        <h2>Select Pages</h2>
         <Button icon={<PlusCircleOutlined />} onClick={showModal}></Button>
       </Header>
       <SelectWrapper>
-        {objects.map((object) => {
-          return (
-            <>
-              <ListItem key={object._id} id={object._id}>
-                <ListItemLeft onClick={() => objectClickHandler(object._id)}>
-                  <ListItemIcon>{<FileOutlined />}</ListItemIcon>
-                  <ListItemContent>
-                    <ListItemTitle>{object.title}</ListItemTitle>
-                    <ListItemBio>{object.bio}</ListItemBio>
-                  </ListItemContent>
-                </ListItemLeft>
-                <Button
-                  icon={<DeleteOutlined />}
-                  id={object._id}
-                  type="text"
-                  onClick={() => setDeleteModal(object._id)}
-                />
-              </ListItem>
-              <LineSeperator />
-            </>
-          );
-        })}
+        {objects.length === 0 ? (
+          <Empty description="No pages have been created yet" style={{width: 400, padding: 10}}>        <Button icon={<PlusCircleOutlined />} onClick={showModal} type="primary">Create new page</Button>
+          </Empty>
+        ) : (
+          objects.map((object) => {
+            return (
+              <>
+                <ListItem key={object._id} id={object._id}>
+                  <ListItemLeft onClick={() => objectClickHandler(object._id)}>
+                    <ListItemIcon>{<FileOutlined />}</ListItemIcon>
+                    <ListItemContent>
+                      <ListItemTitle>{object.title}</ListItemTitle>
+                      <ListItemBio>{object.bio}</ListItemBio>
+                    </ListItemContent>
+                  </ListItemLeft>
+                </ListItem>
+                <LineSeperator />
+              </>
+            );
+          })
+        )}
       </SelectWrapper>
     </Wrapper>
   );
