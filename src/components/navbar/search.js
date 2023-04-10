@@ -5,6 +5,7 @@ import { Button, Spin } from "antd";
 import styled from "styled-components";
 import { SearchApi } from "../../api/searchApi";
 import { Momentum } from "@uiball/loaders";
+import { useAuthStore } from "../stores/authStore";
 
 const Search = () => {
   const [showSearch, setShowSearch] = useState(false);
@@ -12,6 +13,7 @@ const Search = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState("");
   const ref = useRef(null);
+  const userID = useAuthStore((state) => state.userID)
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -29,7 +31,7 @@ const Search = () => {
     try {
       setIsLoading(true);
       if (!!prompt) {
-        const response = await SearchApi.getSearch(prompt).then((data) => {
+        const response = await SearchApi.getSearch(prompt, userID).then((data) => {
         if (!data) throw new Error("Search failed");
         setResult(data.answer);
         });
