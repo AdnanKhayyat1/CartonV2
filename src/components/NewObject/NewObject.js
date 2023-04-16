@@ -1,53 +1,54 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Input, Divider, Button, Breadcrumb, Spin, Drawer, Modal } from "antd";
 import {
-  PlusCircleOutlined,
-  HighlightOutlined,
-  ExperimentOutlined,
-  ArrowLeftOutlined,
-  HomeOutlined,
-  CloseCircleOutlined,
+
+  EditOutlined,
 } from "@ant-design/icons";
 import "./newObject.css";
-import { COVER_IMAGE_URLS, DEFAULT_OBJECT_CONFIG } from "../../tools/constants";
-import ContentGridV2 from "./ContentGridV2";
+import EmojiPicker, { Emoji, EmojiStyle } from "emoji-picker-react";
+
+import { DEFAULT_OBJECT_CONFIG } from "../../tools/constants";
 import styled from "styled-components";
-import { StateContext } from "./ObjectContainer";
-import { useQuery, useMutation } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { ObjectApi } from "../../api/objectApi";
 
 import { shallow } from "zustand/shallow";
-
 import Tags from "./Tags";
 import Properties from "./Properties";
-import Styler from "./Styler";
-import CreateTemplateModal from "./CreateTemplateModal";
+
 import useObjectStore from "../stores/objectStore";
-import { useAuthStore } from "../stores/authStore";
 import ObjectSidebar from "./ObjectSidebar";
 import { notification } from "antd";
+import { useParams } from "react-router-dom";
+import EditorWrapper from "./EditorWrapper";
 
 const Wrapper = styled.div`
   border-radius: 10px;
   max-width: fit-content;
   margin: 10px auto;
   height: 90vh;
-
+`;
+const AbnormalWrapper = styled.div`
+  position: absolute;
+  top: 50vh;
+  left: 50%;
 `;
 
-function NewObject({ id }) {
-  const { isLoading, isError, data, isSuccess } = useQuery(["object", id], () =>
-    ObjectApi.getObject(id)
+function NewObject() {
+  const { id } = useParams();
+  const queryClient = useQueryClient();
+  const { isLoading, isError, data, isSuccess } = useQuery(
+    ["object", id],
+    () => ObjectApi.getObject(id),
+    {
+      refetchOnMount: "always",
+    }
   );
-  const [showPicker, setShowPicker] = useState(false);
   const [title, setTitle] = useObjectStore(
     (state) => [state.title, state.updateTitle],
     shallow
   );
   const setId = useObjectStore((state) => state.updateId, shallow);
-  const mutation = useMutation((updatedObject) =>
-    ObjectApi.updateObject(updatedObject)
-  );
   const [bio, setBio] = useObjectStore(
     (state) => [state.bio, state.updateBio],
     shallow
@@ -64,30 +65,29 @@ function NewObject({ id }) {
     (state) => [state.properties, state.updateProperties],
     shallow
   );
-  const updateLeftColumn = useObjectStore(
-    (state) => state.updateLeftColumn,
-    shallow
-  );
-  const updateRightColumn = useObjectStore(
-    (state) => state.updateRightColumn,
-    shallow
-  );
-  const [isTyping, setIsTyping] = useState(false);
+  const [editorID, setEditorID] = useObjectStore((state) => [state.editorID, state.updateEditorID], shallow)
+  const [pageIcon, setPageIcon] = useObjectStore((state) => [state.icon, state.updateIcon], shallow)
+  const [viewType, setViewType] = useObjectStore((state) => [state.viewType, state.updateViewType], shallow)
+
   const [openStyle, setOpenStyle] = useState(false);
   const [objConfig, setObjConfig] = useState(DEFAULT_OBJECT_CONFIG);
-  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showIconPicker, setShowIconPicker] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
 
-  const showDrawer = () => {
-    setOpenStyle(true);
-  };
+  const mutation = useMutation(
+    (updatedObject) => ObjectApi.updateObject(updatedObject),
+    {
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: ["object", id] }),
+    }
+  );
 
-  const onClose = () => {
+  const onCloseStyle = () => {
     setOpenStyle(false);
   };
 
-  const openNotificationWithIcon = (type) => {
+  const openNotificationWithIcon = (type, message = "") => {
     if (type === "success") {
       api["success"]({
         message: "Succesfully saved as template",
@@ -99,7 +99,17 @@ function NewObject({ id }) {
         message: "Template deleted",
         description: "Your page is no longer a template.",
       });
+    } else if (type === "error") {
+      api["error"]({
+        message: "Error",
+        description: message,
+      });
     }
+  };
+
+  const onEmojiClick = (emojiData, event) => {
+    setPageIcon(emojiData.unified);
+    setShowIconPicker(false);
   };
 
   useEffect(() => {
@@ -110,38 +120,49 @@ function NewObject({ id }) {
       setTags(data.tags);
       setIsTemplate(data.isTemplate);
       setProperties(data.properties);
-      updateLeftColumn(data.leftCol);
-      updateRightColumn(data.rightCol);
+      setEditorID(data.editorID);
+      setPageIcon(data.icon);
+      setViewType(data.viewType);
     }
   }, [isSuccess]);
+
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (
-        data.title !== title ||
+    if (
+      data &&
+      (data.title !== title ||
         data.bio !== bio ||
         data.properties !== properties ||
         data.isTemplate !== isTemplate ||
-        data.tags !== tags
-      ) {
-        mutation.mutate({
-          ...data,
-          title: title,
-          bio: bio,
-          tags: tags,
-          isTemplate: isTemplate,
-          properties: properties,
-        });
-      }
-      // Send Axios request here
-    }, 500);
+        data.tags !== tags ||
+        data.icon !== pageIcon ||
+        data.viewType !== viewType)
+    ) {
+      mutation.mutate({
+        ...data,
+        title: title,
+        bio: bio,
+        tags: tags,
+        isTemplate: isTemplate,
+        properties: properties,
+        icon: pageIcon,
+        viewType: viewType,
+      });
+    }
+  }, [title, bio, properties, isTemplate, pageIcon, viewType]);
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [title, bio, properties, isTemplate]);
   if (isLoading) {
-    return <Spin />;
+    return (
+      <AbnormalWrapper>
+        <Spin />
+      </AbnormalWrapper>
+    );
   }
   if (isError) {
-    return <div>Error</div>;
+    return (
+      <AbnormalWrapper>
+        <h1>Error</h1>
+      </AbnormalWrapper>
+    );
   }
   return (
     <Wrapper>
@@ -150,15 +171,15 @@ function NewObject({ id }) {
         setIsTemplate={setIsTemplate}
         triggerNotification={openNotificationWithIcon}
         isTemplate={isTemplate}
-  
       />
       <Drawer
         title="Style"
         placement="right"
-        onClose={onClose}
+        onClose={onCloseStyle}
         open={openStyle}
         forceRender
       ></Drawer>
+
       <div
         className="object-app"
         style={{
@@ -168,21 +189,55 @@ function NewObject({ id }) {
         }}
       >
         <div className="header-main">
+          <div className="page-icon">
+            {pageIcon ? (
+              <Emoji
+                unified={pageIcon.toLowerCase()}
+                emojiStyle={EmojiStyle.APPLE}
+                size={22}
+              />
+            ) : null}
+            <div
+              className="edit-overlay"
+              onClick={() => {
+                setShowIconPicker(!showIconPicker);
+              }}
+            >
+              <EditOutlined />
+              <span>Edit</span>
+            </div>
+            {showIconPicker && (
+              <div className="icon-picker">
+                <EmojiPicker
+                  onEmojiClick={onEmojiClick}
+                  autoFocusSearch={false}
+                  lazyLoadEmojis
+                />
+              </div>
+            )}
+          </div>
+
           <div className="title-wrapper">
+            {/* <EmojiPicker/> */}
             <Input
               placeholder="New Page Title"
               value={title}
               bordered={false}
-              style={{ fontSize: 50, fontWeight: 600, maxWidth: "30vw" }}
-              onBlur={() => setIsTyping(false)}
-              onFocus={() => setIsTyping(true)}
+              style={{
+                fontSize: 50,
+                fontWeight: 600,
+                maxWidth: "100%",
+                whiteSpace: "break-spaces",
+              }}
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
               onKeyDown={(e) => {}}
+              maxLength="20"
             />
           </div>
         </div>
+
         <div className="header-section">
           <Tags />
         </div>
@@ -190,8 +245,6 @@ function NewObject({ id }) {
           <Input
             placeholder="Add bio"
             style={{ color: "grey" }}
-            onBlur={() => setIsTyping(false)}
-            onFocus={() => setIsTyping(true)}
             value={bio}
             bordered={false}
             onChange={(e) => {
@@ -206,7 +259,8 @@ function NewObject({ id }) {
           )}
         </div>
         <Divider />
-        <ContentGridV2 />
+        {editorID && <EditorWrapper editorID={editorID}/>}
+        
       </div>
     </Wrapper>
   );

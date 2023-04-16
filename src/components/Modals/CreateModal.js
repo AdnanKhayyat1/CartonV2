@@ -12,21 +12,14 @@ function CreateModal({ createModalVisible, setCreateModalVisible, templates, use
   const createNewPage = async () => {
     try{
       setIsLoading(true);
+      const newEditor = await CellApi.createCell();
+      if(newEditor.status !== 200) throw new Error("Couldn't create new editor");
 
-      const newPage = await ObjectApi.createObject({userID: userID});
-      if(!newPage) throw new Error('Couldn\'t create new page');
-      const defaultCell = await CellApi.createCell();
-      if(!defaultCell) throw new Error('Couldn\'t create default cell');
-      const updatedPage = {
-        ...newPage.data.data,
-        leftCol: {
-          showColumn: true,
-          cellIDs: [defaultCell.data._id]
-        }
-      }
-      const resPage = await ObjectApi.updateObject(updatedPage);
-      if(!resPage) throw new Error('Couldn\'t update page');
-      navigate(`/newobject/${updatedPage._id}`)
+
+      const newPage = await ObjectApi.createObject({userID: userID, editorID: newEditor.data._id});
+      if(newPage.status !== 200) throw new Error('Couldn\'t create new page');
+      console.log(newPage);
+      navigate(`/newobject/${newPage.data.data._id}`)
     } catch(e){
       console.log(e);
     } finally{
@@ -44,36 +37,25 @@ function CreateModal({ createModalVisible, setCreateModalVisible, templates, use
   const createNewPageFromTemplate = async (e) => {
     const id = e.currentTarget.id;
     const currTemplate = templates.find((template) => template._id === id);
-    const title = currTemplate.title;
-    const bio = currTemplate.bio;
-    const properties = currTemplate.properties.map((property) => {
+    const templateProperties = currTemplate.properties.map((property) => {
       return {
         key: property.key,
         type: property.type,
         value: "",
       };
     });
-    const leftCol = {
-      showColumn: currTemplate.leftCol.showColumn,
-      cellIDs: await Promise.all(
-        currTemplate.leftCol.cellIDs.map(createNewCellFromTemplate)
-      ),
-    };
-    const rightCol = {
-      showColumn: currTemplate.rightCol.showColumn,
-      cellIDs: await Promise.all(
-        currTemplate.rightCol.cellIDs.map(createNewCellFromTemplate)
-      ),
-    };
+    const templateEditorID = createNewCellFromTemplate(currTemplate.editorID);
+
 
     const newObject = await ObjectApi.createObject();
     const PopulatedNewObject = await ObjectApi.updateObject({
       _id: newObject.data.data._id,
-      title: title,
-      bio: bio,
-      properties: properties,
-      leftCol: leftCol,
-      rightCol: rightCol,
+      title: currTemplate.title,
+      bio: currTemplate.bio,
+      properties: templateProperties,
+      editorID: templateEditorID,
+      icon: currTemplate.icon,
+
     });
     navigate(`/newobject/${PopulatedNewObject._id}`);
   };

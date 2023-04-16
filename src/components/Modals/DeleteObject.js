@@ -13,23 +13,15 @@ function DeleteObject({ deleteModal, setDeleteModal, setObjects, objects }) {
       setConfirmLoading(true);
       const objectToDelete = await ObjectApi.getObject(deleteModal);
       if (!objectToDelete) throw new Error("Couldnt fetch object to delete");
-      // delete cells first
-      if (objectToDelete.leftCol.cellIDs.length > 0) {
-        const deleteLeftCells = await CellApi.removeCell(
-          objectToDelete.leftCol.cellIDs
-        );
-        if (!deleteLeftCells.acknowledged){
-          throw new Error("Couldn't delete cells left");
-        }
+      // delete cell first
+
+      const deleteBlock = await CellApi.removeCell(
+        objectToDelete.editorID
+      );
+      if (deleteBlock.status !== 200){
+        throw new Error("Couldn't delete cell");
       }
-      if (objectToDelete.rightCol.cellIDs.length > 0) {
-        const deleteRightCells = await CellApi.removeCell(
-          objectToDelete.rightCol.cellIDs
-        );
-        if (!deleteRightCells.acknowledged){
-          throw new Error("Couldn't delete cells right");
-        }
-      }
+
       const deleteObject = await ObjectApi.removeObject(objectToDelete._id);
       if (deleteObject.status !== 200)
         throw new Error("Couldn't delete object");

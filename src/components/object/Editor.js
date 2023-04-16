@@ -1,4 +1,10 @@
-import { default as React, useEffect, useRef, useState, useCallback } from "react";
+import {
+  default as React,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
@@ -10,26 +16,26 @@ import Code from "@editorjs/code";
 import SimpleImage from "@editorjs/simple-image";
 import Marker from "@editorjs/marker";
 import Tooltip from "editorjs-tooltip";
-import AttachesTool from '@editorjs/attaches';
+import AttachesTool from "@editorjs/attaches";
 import "./Editor.css";
 import { DEFAULT_INITIAL_DATA } from "../../tools/constants";
 
 import { useCellStore } from "../stores/cellStore";
 import { CellApi } from "../../api/cellApi";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 const EDITTOR_HOLDER_ID = "editorjs";
 
-const Editor = ({cell , isReadOnly = false}) => {
+const Editor = ({ id, editorData, isReadOnly = false }) => {
   const ejInstance = useRef(null);
-  const customID = `${EDITTOR_HOLDER_ID}-${cell._id}`;
-  const updateEditorData = useCellStore((state) => state.updateCellById);
+  const customID = `${EDITTOR_HOLDER_ID}-${id}`;
+  const queryClient = useQueryClient();
   const BLOCK_TOOLS = {
     header: {
       class: Header,
       inlineToolbar: true,
       config: {
-        placeholder: 'test',
-      }
+        placeholder: "test",
+      },
     },
     link: Link,
     checklist: Checklist,
@@ -53,16 +59,13 @@ const Editor = ({cell , isReadOnly = false}) => {
     },
     attaches: {
       class: AttachesTool,
-      
-    }
+    },
   };
 
   const mutation = useMutation({
     mutationFn: CellApi.updateCell,
-    onSuccess: (data) => {
-      if (data.status === 200) {
-        updateEditorData(cell._id, data.data);
-      }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cell", id] });
     },
     onError: (error) => {
       console.log(error);
@@ -70,15 +73,13 @@ const Editor = ({cell , isReadOnly = false}) => {
   });
   useEffect(() => {
     if (!ejInstance.current) {
-      console.log(customID);
+      console.log(editorData);
       initEditor();
     }
-
-  }, [ejInstance.current])
+  }, [ejInstance.current]);
   useEffect(() => {
     return () => {
       if (!ejInstance.current) {
-        console.log(customID);
         initEditor();
       }
       ejInstance.current = null;
@@ -88,26 +89,20 @@ const Editor = ({cell , isReadOnly = false}) => {
   const initEditor = () => {
     const editor = new EditorJS({
       holder: customID,
-      data: cell.data,
+      data: editorData,
       onReady: () => {
         ejInstance.current = editor;
       },
       onChange: async () => {
-        
-        await ejInstance.current.save().then(
-           (outputData) => {
-       
-            
-            mutation.mutate({
-              ...cell,
-              data: outputData,           
-            });
-            
-          }
-        );
+        await ejInstance.current.save().then((outputData) => {
+          mutation.mutate({
+            _id: id,
+            data: outputData,
+          });
+        });
       },
       tools: BLOCK_TOOLS,
-      readOnly: isReadOnly
+      readOnly: isReadOnly,
     });
   };
 

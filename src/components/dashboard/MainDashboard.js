@@ -33,6 +33,10 @@ function MainDashboard({ userID }) {
       refetchOnMount: "always",
     }
   );
+  const handler = (event) => {
+    setDeleteModal(event.currentTarget.id);
+    event.stopPropagation();
+  }
 
   const navigate = useNavigate();
   const showModal = () => {
@@ -69,20 +73,37 @@ function MainDashboard({ userID }) {
       </Header>
       <SelectWrapper>
         {objects.length === 0 ? (
-          <Empty description="No pages have been created yet" style={{width: 400, padding: 10}}>        <Button icon={<PlusCircleOutlined />} onClick={showModal} type="primary">Create new page</Button>
+          <Empty
+            description="No pages have been created yet"
+            style={{ width: 400, padding: 10 }}
+          >
+            {" "}
+            <Button
+              icon={<PlusCircleOutlined />}
+              onClick={showModal}
+              type="primary"
+            >
+              Create new page
+            </Button>
           </Empty>
         ) : (
           objects.map((object) => {
             return (
               <>
-                <ListItem key={object._id} id={object._id}>
-                  <ListItemLeft onClick={() => objectClickHandler(object._id)}>
+                <ListItem key={object._id} id={object._id} onClick={() => objectClickHandler(object._id)}>
+                  <ListItemLeft >
                     <ListItemIcon>{<FileOutlined />}</ListItemIcon>
                     <ListItemContent>
                       <ListItemTitle>{object.title}</ListItemTitle>
                       <ListItemBio>{object.bio}</ListItemBio>
                     </ListItemContent>
                   </ListItemLeft>
+                  <Button 
+                  id={object._id}
+                  icon={
+                    <DeleteOutlined/>
+                  } 
+                  onClick={handler}/>
                 </ListItem>
                 <LineSeperator />
               </>

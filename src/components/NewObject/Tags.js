@@ -105,15 +105,20 @@ function Tags() {
       console.log(err);
     }
   };
-  const deleteTagsFromCellStore = useCellStore(
-    (state) => state.deleteTagFromAllCells,
-    shallow
-  );
+  const [cellTags, setCellTags] = useCellStore((state) => [state.tags, state.updateTags], shallow)
+
+
   const deleteTagEverywhere = async (tagID) => {
     try {
       setIsLoading(true);
       // delete tag from all cells (FE)
-      deleteTagsFromCellStore(tagID);
+      if(cellTags.includes(tagID)){
+        const newCellTags = [...cellTags].filter((tag) => {
+          return tag != tagID;
+        });
+        setCellTags(newCellTags);
+      }
+     
       // push changes to backend (BE)
       const resCells = await CellApi.deleteTagFromCells(tagID);
       if (!resCells.data) throw new Error("Cell POST call failed");

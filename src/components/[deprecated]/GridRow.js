@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import Editor from "../object/Editor";
-import EmbeddedObject from "./EmbeddedObject";
 import styled from "styled-components";
 import { Collapse, Popover } from "antd";
-import ImageBlock from "./ImageBlock";
 import {
   CaretRightOutlined,
   CaretDownOutlined,
@@ -58,9 +56,9 @@ function GridRow({ id, cell, editorReadOnly = false }) {
         />
       );
     } else if (cell.mode === "image") {
-      return <ImageBlock id={cell._id} cell={cell} key={cell._id} />;
+      return <></>;
     } else {
-      return <EmbeddedObject id={cell._id} cell={cell} key={cell._id} />;
+      return <></>;
     }
   };
   const collapsibleHandler = () => {

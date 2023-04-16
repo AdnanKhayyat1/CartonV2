@@ -91,9 +91,9 @@ function BlockSettings({ cell, collapsibleHandler, isCollapsible }) {
         </Space.Compact>
       <BlockTags cell={cell} />
       <Space align="center" style={{ margin: "10px 0" }}>
-        <Tooltip title="Delete" placement="bottom">
+        {/* <Tooltip title="Delete" placement="bottom">
           <Button icon={<DeleteOutlined />} onClick={blockDeleteHandler} />
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip title="Change pin color" placement="top">
           <Select
             onChange={(value, option) => {
@@ -130,7 +130,7 @@ function BlockSettings({ cell, collapsibleHandler, isCollapsible }) {
             })}
           </Select>
         </Tooltip>
-        <Tooltip
+        {/* <Tooltip
           title={
             isCollapsible ? "Switch to fixed view" : "Switch to toggle view"
           }
@@ -143,7 +143,7 @@ function BlockSettings({ cell, collapsibleHandler, isCollapsible }) {
               collapsibleHandler();
             }}
           />
-        </Tooltip>
+        </Tooltip> */}
       </Space>
     </SettingsWrapper>
   );

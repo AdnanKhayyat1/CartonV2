@@ -30,16 +30,14 @@ const updateCell = (cell) => {
   return response;
 };
 //Delete
-const removeCell = async (cellIDs) => {
-  const deleteIDS = cellIDs.join(",");
-  if (deleteIDS !== "") {
-    const { data: response } = await HttpClient.delete(
-      `${CELL_API}/?ids=${deleteIDS}`
-    );
-    return response;
-  }
+const removeCell = async (id) => {
 
-  return [];
+
+  const response = await HttpClient.delete(
+    `${CELL_API}/${id}`
+  );
+  return response;
+  
 };
 // delete tag from all cells
 const deleteTagFromCells = async (tagID) => {

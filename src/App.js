@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./views/Home";
 import Navbar from "./components/navbar/Navbar";
-import ObjectContainer from "./components/NewObject/ObjectContainer";
 import { supabase } from "./api/supabaseClient";
 
 import { useAuthStore } from "./components/stores/authStore";
 import SideBarV2 from "./components/sidebar/SideBarV2";
 import TagGallery from "./components/Gallery/TagGallery";
+import NewObject from "./components/NewObject/NewObject";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -45,7 +45,7 @@ function App() {
               <Route
                 exact
                 path="/newobject/:id"
-                element={<ObjectContainer />}
+                element={<NewObject />}
               />
               {/* <Route exact path="/graph" element={</>} /> */}
               <Route exact path="/tag/:id" element={<TagGallery />} />

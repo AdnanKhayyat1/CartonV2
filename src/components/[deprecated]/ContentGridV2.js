@@ -42,7 +42,10 @@ function ContentGridV2() {
   const [containerRef, setContainerRef] = useState(null);
   const { isLoading, isError, data, isSuccess } = useQuery(
     ["cells", allCells],
-    () => CellApi.getCellsByIds(allCells)
+    () => CellApi.getCellsByIds(allCells),
+    {
+      refetchOnMount: 'always'
+    }
   );
 
   useEffect(() => {
@@ -71,20 +74,6 @@ function ContentGridV2() {
     }
 
   }, [leftColumn.showColumn, rightColumn.showColumn])
-
-  const bothColsOpen = () => {
-    return leftColumn.showColumn && rightColumn.showColumn;
-  };
-  const showColumn = () => {
-    setLeftColumn({ ...leftColumn, showColumn: true });
-    setRightColumn({ ...rightColumn, showColumn: true });
-  };
-  const hideLeftCol = () => {
-    setLeftColumn({ ...leftColumn, showColumn: false });
-  };
-  const hideRightCol = () => {
-    setRightColumn({ ...rightColumn, showColumn: false });
-  };
 
   const createCell = useMutation((type) => CellApi.createCell({ mode: type }));
 

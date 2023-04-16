@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import GridRow from "../NewObject/GridRow";
+import EditorWrapper from "../NewObject/EditorWrapper";
 import { useCellStore } from "../stores/cellStore";
 import { useParams } from "react-router-dom";
 import { TAG_GALLERY_COLORS } from "../../tools/constants";
@@ -51,11 +51,11 @@ function TagGallery() {
             </Typography.Title>
           </GalleryHeader>
           <Gallery>
-            {showTaggedCell && showTaggedCell.length > 0 ? (
+            {/* {showTaggedCell && showTaggedCell.length > 0 ? (
               showTaggedCell.map((cell) => (
-                <GridRow cell={cell} editorReadOnly={true} />
+                <EditorWrapper id={editorID}  editorReadOnly={true} />
               ))
-            ) : (
+            ) : ( */}
               <NoItemsYet>
                 <DisconnectOutlined style={{ fontSize: "2em" }} />
                 <Typography.Title level={5}>
@@ -63,7 +63,7 @@ function TagGallery() {
                   <br /> Note: Tag Gallery does NOT show tagged pages, only sections.
                 </Typography.Title>
               </NoItemsYet>
-            )}
+            {/* )} */}
           </Gallery>
         </>
       )}
