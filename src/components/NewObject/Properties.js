@@ -56,6 +56,7 @@ function Properties({ properties, setProperties }) {
         size="small"
         style={{
           color: "gray",
+          paddingLeft: 0,
         }}
         icon={<PlusOutlined />}
         onClick={() => {

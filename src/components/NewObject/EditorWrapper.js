@@ -13,12 +13,14 @@ function EditorWrapper({ editorID, isReadOnly = false }) {
     }
   );
   const setID = useCellStore((state) => state.updateId);
-  const [editorData, setEditorData] = useCellStore((state) => [state.data, state.updateData], shallow)
+  const [editorData, setEditorData] = useCellStore((state) => [state.data, state.updateData], shallow);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (isSuccess) {
       setID(data._id);
-      setEditorData(data.data);
+      setEditorData(data.data ? data.data : {});
+      setIsReady(true);
     }
   }, [isSuccess]);
   if(isLoading) {
@@ -31,7 +33,7 @@ function EditorWrapper({ editorID, isReadOnly = false }) {
   return (
     <div>
       
-      {editorData && <Editor id={editorID} editorData={editorData} isReadOnly={isReadOnly} />}
+      {isReady && <Editor id={editorID} editorData={editorData} isReadOnly={isReadOnly} />}
     </div>
   );
 }

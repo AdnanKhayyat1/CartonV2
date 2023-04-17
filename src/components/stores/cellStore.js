@@ -7,7 +7,7 @@ export const useCellStore = create(
     isStarred: false,
     tags: [],
     color: "cornflowerblue",
-    data: null,
+    data: {},
 
     updateId: (id) => set(() => ({ _id: id}), false, "update id"),
     updateTitle: (title) => set(() => ({ title: title }), false, "update title"),

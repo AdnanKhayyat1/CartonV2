@@ -1,34 +1,16 @@
 .editor-page {
   text-align: left;
-  flex: 9;
+  width: 100%;
 }
 .ce-toolbar {
   background-color: white;
-}
-.codex-editor__redactor{
-  padding-bottom: 10px !important;
+  right: 100%;
+  
 }
 
-.ce-block:hover {
-  background-color: #f5f5f5;
-}
-.ce-block:focus {
-  background-color: transparent;
-}
-@media (min-width: 651px) {
-  .codex-editor--narrow .ce-block--focused {
+  @media (min-width: 651px) {
+  .codex-editor--narrow .codex-editor__redactor{
     margin-right: 0px;
   }
-}
+} 
 
-.full-page-wrapper {
-  max-width: 100%;
-}
-.pagelet-wrapper {
-  max-width: 40vw;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 10px;
-}

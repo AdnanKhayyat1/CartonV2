@@ -13,6 +13,7 @@ import img from "./db-img.jpg";
 import CreateModal from "../Modals/CreateModal";
 import DeleteObject from "../Modals/DeleteObject";
 import { Empty } from "antd";
+import { Emoji, EmojiStyle } from "emoji-picker-react";
 
 function MainDashboard({ userID }) {
   const [objects, setObjects] = useState([]);
@@ -36,7 +37,7 @@ function MainDashboard({ userID }) {
   const handler = (event) => {
     setDeleteModal(event.currentTarget.id);
     event.stopPropagation();
-  }
+  };
 
   const navigate = useNavigate();
   const showModal = () => {
@@ -90,20 +91,33 @@ function MainDashboard({ userID }) {
           objects.map((object) => {
             return (
               <>
-                <ListItem key={object._id} id={object._id} onClick={() => objectClickHandler(object._id)}>
-                  <ListItemLeft >
-                    <ListItemIcon>{<FileOutlined />}</ListItemIcon>
+                <ListItem
+                  key={object._id}
+                  id={object._id}
+                  onClick={() => objectClickHandler(object._id)}
+                >
+                  <ListItemLeft>
+                    <ListItemIcon>
+                      {!!object.icon ? (
+                        <Emoji
+                          unified={object.icon.toLowerCase()}
+                          emojiStyle={EmojiStyle.APPLE}
+                          size={22}
+                        />
+                      ) : (
+                        <FileOutlined />
+                      )}
+                    </ListItemIcon>
                     <ListItemContent>
                       <ListItemTitle>{object.title}</ListItemTitle>
                       <ListItemBio>{object.bio}</ListItemBio>
                     </ListItemContent>
                   </ListItemLeft>
-                  <Button 
-                  id={object._id}
-                  icon={
-                    <DeleteOutlined/>
-                  } 
-                  onClick={handler}/>
+                  <Button
+                    id={object._id}
+                    icon={<DeleteOutlined />}
+                    onClick={handler}
+                  />
                 </ListItem>
                 <LineSeperator />
               </>

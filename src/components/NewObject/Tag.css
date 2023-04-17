@@ -1,0 +1,7 @@
+.tag-prompt::-webkit-input-placeholder {
+    color: gray;
+    font-size: 0.875rem;
+}
+.tag-prompt {
+    border: none;
+}

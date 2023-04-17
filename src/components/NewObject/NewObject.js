@@ -1,8 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Input, Divider, Button, Breadcrumb, Spin, Drawer, Modal } from "antd";
+import React, { useState, useEffect } from "react";
+import { Input, Divider, Button, Breadcrumb, Spin, Drawer } from "antd";
 import {
-
   EditOutlined,
+  AlignLeftOutlined,
+  AppstoreAddOutlined,
+  ArrowsAltOutlined,
 } from "@ant-design/icons";
 import "./newObject.css";
 import EmojiPicker, { Emoji, EmojiStyle } from "emoji-picker-react";
@@ -65,13 +67,23 @@ function NewObject() {
     (state) => [state.properties, state.updateProperties],
     shallow
   );
-  const [editorID, setEditorID] = useObjectStore((state) => [state.editorID, state.updateEditorID], shallow)
-  const [pageIcon, setPageIcon] = useObjectStore((state) => [state.icon, state.updateIcon], shallow)
-  const [viewType, setViewType] = useObjectStore((state) => [state.viewType, state.updateViewType], shallow)
+  const [editorID, setEditorID] = useObjectStore(
+    (state) => [state.editorID, state.updateEditorID],
+    shallow
+  );
+  const [pageIcon, setPageIcon] = useObjectStore(
+    (state) => [state.icon, state.updateIcon],
+    shallow
+  );
+  const [viewType, setViewType] = useObjectStore(
+    (state) => [state.viewType, state.updateViewType],
+    shallow
+  );
 
   const [openStyle, setOpenStyle] = useState(false);
   const [objConfig, setObjConfig] = useState(DEFAULT_OBJECT_CONFIG);
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [showBio, setShowBio] = useState(true);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -188,6 +200,25 @@ function NewObject() {
           textAlign: objConfig[2].value,
         }}
       >
+        <div className="header-main page-options">
+          <Button
+            icon={<AlignLeftOutlined />}
+            type="text"
+            onClick={() => setShowBio(!showBio)}
+          >
+            Add bio
+          </Button>
+          <Button
+            icon={<AppstoreAddOutlined />}
+            type="text"
+            onClick={() => setIsTemplate(true)}
+          >
+            Save as template
+          </Button>
+          <Button icon={<ArrowsAltOutlined rotate={45} />} type="text">
+            Wide layout
+          </Button>
+        </div>
         <div className="header-main">
           <div className="page-icon">
             {pageIcon ? (
@@ -241,17 +272,19 @@ function NewObject() {
         <div className="header-section">
           <Tags />
         </div>
-        <div className="header-section">
-          <Input
-            placeholder="Add bio"
-            style={{ color: "grey" }}
-            value={bio}
-            bordered={false}
-            onChange={(e) => {
-              setBio(e.target.value);
-            }}
-          />
-        </div>
+        {showBio && (
+          <div className="header-section">
+            <Input
+              placeholder="Add bio"
+              style={{ color: "grey", paddingLeft: 0}}
+              value={bio}
+              bordered={false}
+              onChange={(e) => {
+                setBio(e.target.value);
+              }}
+            />
+          </div>
+        )}
 
         <div className="header-section">
           {objConfig[4].value && (
@@ -259,8 +292,7 @@ function NewObject() {
           )}
         </div>
         <Divider />
-        {editorID && <EditorWrapper editorID={editorID}/>}
-        
+        {editorID && <EditorWrapper editorID={editorID} />}
       </div>
     </Wrapper>
   );
